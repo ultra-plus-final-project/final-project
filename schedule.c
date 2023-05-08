@@ -62,7 +62,7 @@ void print_calendar(int year,int month,int date){
         }
     }
     if(month==2&&isleap(year)==1){
-        printf(" %2d  \n");//what is "d" here
+        printf(" %2d  \n");//what is "%d" here
     }else if(d==6){
         printf("\n");
     }else{
