@@ -1,6 +1,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+//we have to unite our coding style
+
 int isleap(int year){
     //return 1 if leapyear
     //return 0 if normal year
@@ -60,7 +62,7 @@ void print_calendar(int year,int month,int date){
         }
     }
     if(month==2&&isleap(year)==1){
-        printf(" %2d  \n");
+        printf(" %2d  \n");//what is "d" here
     }else if(d==6){
         printf("\n");
     }else{
@@ -73,6 +75,10 @@ void print_calendar(int year,int month,int date){
 
 int main(){
     int year,month,date;
+    //can add some word to make the interface more user-friendly
+    printf("%s\n", "please enter when do you want to start your calender: ");
+    printf("%s\n","(year month date)");
+   
     scanf("%d %d %d",&year,&month,&date);
     print_calendar(year,month,date);
     return 0;
