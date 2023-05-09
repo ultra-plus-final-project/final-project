@@ -23,20 +23,17 @@ struct event_date{
     struct event_content *sub; //point to event content(s)
 };
 
-struct event_date *event_date_insert(struct event_date *event_date_list, int start_month, int end_month, int start_date, int end_date)
-{
+struct event_date *event_date_insert(struct event_date *event_date_list, int start_month, int end_month, int start_date, int end_date){
     /* allocate node */
     struct event_date *new_event_date;
     struct event_content *new_event_content;
     new_event_date = malloc(sizeof(struct event_date));
     new_event_content = malloc(sizeof(struct event_content));
-    if(new_event_date == NULL)
-    {
+    if(new_event_date == NULL){
         printf("Error: malloc failed in event_date_insert\n");
         exit(1);
     }
-    if(new_event_content == NULL)
-    {
+    if(new_event_content == NULL){
         printf("Error: malloc failed in event_date_insert\n");
         exit(1);
     }
@@ -67,13 +64,11 @@ struct event_date *event_date_insert(struct event_date *event_date_list, int sta
     return event_date_list;
 }
 
-struct event_content *event_content_insert(struct event_content *event_content_list, char *name, int start_time, int end_time, int remainder)
-{
+struct event_content *event_content_insert(struct event_content *event_content_list, char *name, int start_time, int end_time, int remainder){
     /* allocate node */
     struct event_content *new_event_content;
     new_event_content = malloc(sizeof(struct event_content));
-    if(new_event_content == NULL)
-    {
+    if(new_event_content == NULL){
         printf("Error: malloc failed in event_content_insert\n");
         exit(1);
     }
@@ -102,8 +97,7 @@ struct event_content *event_content_insert(struct event_content *event_content_l
     return event_content_list;
 }
 
-void print_list1(struct event_date *list)
-{
+void print_list1(struct event_date *list){
   /* print start point for testing */
     while(list != NULL) {
         printf(":: %d %d\n",list -> start_month, list -> start_date);
@@ -111,8 +105,7 @@ void print_list1(struct event_date *list)
     }
 }
 
-void print_list2(struct event_content *list)
-{
+void print_list2(struct event_content *list){
     /* print time for testing */
     while(list != NULL) {
         printf("%s: %d %d\n", list -> name, list -> start_time, list -> end_time);
@@ -120,8 +113,7 @@ void print_list2(struct event_content *list)
     }
 }
 
-void remove_enter(char *sentence)
-{
+void remove_enter(char *sentence){
     /* deal with '\0' */
     char *str = sentence;
     for(; *str && *str != '\n'; str++);
