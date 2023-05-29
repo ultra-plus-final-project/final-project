@@ -16,6 +16,7 @@ typedef struct schedule{
 };
 
 struct schedule *my_schedule=(struct schedule*)malloc(sizeof(struct schedule));
+//全域中不可以用malloc()！！！
 
 void show_schedule(){
     system("CLS");
