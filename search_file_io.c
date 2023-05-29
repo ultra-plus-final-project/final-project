@@ -5,7 +5,6 @@
 #include <string.h>
 #define A_DAY 24
 
-//重複登記 mostly completed, annual event have question to discuss
 //priority queue ongoing
 
 /*************************************test*******************************************/
@@ -26,35 +25,34 @@ struct node{
 int get_content_from_file(struct node *ptr) {                        //get content from file(**while(ptr->next!=NULL){ptr=ptr->next;})
     FILE *input_file;                                           
     char line[350]; 
-    memset(line, '\0', sizeof(line));                                  
-    input_file = fopen("input.txt", "r");                           //connect input_file to input.txt (read only)
-    if (input_file == NULL) {                                       //if fail connecting
+    memset(line,'\0', sizeof(line));                                  
+    input_file=fopen("input.txt", "r");                           //connect input_file to input.txt (read only)
+    if (input_file==NULL) {                                       //if fail connecting
         printf("Error opening input file!\n");
         return 0;  
     }
     while (fgets(line, sizeof(line), input_file) != NULL) {        //put a line of input_file into line 
-        sscanf(line, "%d/%d %d %d %d %d",                          //distribute the things in line to ptr
+        sscanf(line,"%d/%d %d %d %d %d",                          //distribute the things in line to ptr
                &(ptr->strt_month), &(ptr->strt_day),
                &(ptr->whole_day), &(ptr->alert),
                &(ptr->strt_time), &(ptr->end_time));
         char *token;
-        token = strtok(line, ",");                                 //split the strings using commas as separators
-        if (token != NULL) {
-            ptr->activity = strdup(token);                        //activity is the first string before ","
+        token=strtok(line,",");                                 //split the strings using commas as separators
+        if (token!=NULL) {
+            ptr->activity=strdup(token);                        //activity is the first string before ","
         }
-        token = strtok(NULL, ",");                                //split the strings using commas as separators
-        if (token != NULL) {
-             ptr->place = strdup(token);                         //place is the second string before ","
-        }
-
-        token = strtok(NULL, ",");                              //split the strings using commas as separators
-        if (token != NULL) {
-             ptr->others = strdup(token);                       //others is the first string before ","
+        token=strtok(NULL,",");                                //split the strings using commas as separators
+        if (token!=NULL) {
+             ptr->place=strdup(token);                         //place is the second string before ","
         }
 
-        ptr->next = (struct node*)malloc(sizeof(struct node));  //allocate memory for the next node
-        ptr = ptr->next;                                        //move to the next node
-        ptr->next = NULL;                                       //set the next pointer to NULL for the last node
+        token=strtok(NULL,",");                              //split the strings using commas as separators
+        if (token!=NULL) {
+             ptr->others=strdup(token);                       //others is the first string before ","
+        }
+        ptr->next=(struct node*)malloc(sizeof(struct node));  //allocate memory for the next node
+        ptr=ptr->next;                                        //move to the next node
+        ptr->next=NULL;                                       //set the next pointer to NULL for the last node
     }
     fclose(input_file);                                         //close the file
     return 1;
@@ -79,7 +77,7 @@ int write_content_on_file(struct node *ptr){                    //write content 
 
 void search_if_have_activity(struct node *list,int time){       //search if have things to do at the time
     while(list!=NULL){
-        if(list->strt_time==time){                              //if there's thing to do at the time
+        if(list->strt_time<=time&&list->end_time>=time){                              //if there's thing to do at the time
             printf("You have %s at %d",list->activity,time);            //print the activity name
             break;
         }else{
@@ -123,9 +121,12 @@ void search_scheduled_time_through_activity(struct node *list,char *activity){
     }
 }
 
-void long_term_event(struct node *event_date_list, int month, int date, char *name, int start_time, int end_time, int remainder){
+struct node *annual_activity;
+
+void long_term_event(struct node *event_date_list, int month, int date, bool whole_day, bool alert, char *name, int start_time, int end_time, char *place, int remainder){
     char selection;
     bool default=1;
+    static int this_year=(schedule->year+1);       //only declare this_year=year once
     while(default){
         printf("This activity a weekly event (press "w")
         , a monthly event (press "m"), a annual event 
@@ -144,12 +145,12 @@ void long_term_event(struct node *event_date_list, int month, int date, char *na
                             event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
                         }
                    }else if(event_date_list->strt_month==2){    //if feb
-                        if(myschedule->year%4==0){              //yuarn year
+                        if(myschedule->year%4==0){              //heap year
                             for(int i=event_date_list->strt_day;i<29;i+=7){
                                 event_date_insert(event_date_list, month, i/*date*/); //******************************
                                 event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
                             }
-                        }else{                                  //ping year
+                        }else{                                  //normal year
                             for(int i=event_date_list->strt_day;i<30;i+=7){
                                 event_date_insert(event_date_list, month, i/*date*/); //******************************
                                 event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
@@ -164,12 +165,11 @@ void long_term_event(struct node *event_date_list, int month, int date, char *na
                         event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
                     }
                     default=0;
-                    break;
-           /*case 'y':                                          //if is an annual event----have bug needed discuss                    
-                    static int this_year=schedule->year;
+                    break;   
+           case 'y':                                          //if is an annual event                  
+                    add_to_list(annual_activity,month,date,whole_day,alert,start_time,end_time,name,place,remainder); //add the event into annual_activity list
                     event_date_insert(event_date_list, month, date); //******************************
                     event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
-                */
             case 'n':                                            //if not long term activity, just insert
                     event_date_insert(event_date_list, month, date); //******************************//that month that date
                     event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
@@ -179,22 +179,36 @@ void long_term_event(struct node *event_date_list, int month, int date, char *na
                     printf("Invalid input!!\n");
                     break;
         }
+        if(this_year==schedule->year){  //if this year == year
+            while(annual_activity!=NULL){  //put every event in the annual_activity list into the event list
+                event_date_insert(event_date_list, annual_activity->strt_month, annual_activity->strt_day); //******************************
+                event_content_insert(event_date_list->event_content, annual_activity->activity,annual_activity->start_time,annual_activity->end_time,annual_activity->others);
+                annual_activity=annual_activity->next;
+            }
+            this_year++;  //this_year+1, so the events won't be add again till next year
+        }
     }
 }
 
 /**************************************priority queue************************************/
-struct node day_tree[100];
-void pop(struct node *day_tree){
+struct priority_queue{
+    int time;
+    struct node *event;
+};
+
+struct priority_queue day_tree[100];
+
+void pop(struct  priority_queue *day_tree){
     while(day_tree[0]->event_content){
         printf("%s",day_tree[0]->event_content);
         day_tree[0]->event_content=day_tree[0]->event_content->next;
     }
     
 }
-struct node *push(struct node *day_tree, int strt_time, char *name){
+struct node *push(struct priority_queue *day_tree, int strt_time, struct node *list ){
 
 }
-struct node *delete(struct node *day_tree, int strt_time){
+struct node *delete(struct priority_queue *day_tree, int strt_time){
 
 }
 /**************************************priority queue************************************/
