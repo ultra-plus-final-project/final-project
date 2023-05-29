@@ -42,6 +42,7 @@ int main(){
     int date;
     int hour;
     char names[50];
+    //下面這坨咚咚應該只是測試用的對吧...！
     scanf("%d %d %d %d ",&year,&month,&date,&hour);
     my_schedule ->year = year;
     my_schedule ->month = month;
