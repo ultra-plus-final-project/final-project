@@ -239,7 +239,7 @@ int main() {
     printf("Next, %s ,What kind of action do you want to do\n", user_name);
     printf(" [1] enter a new event [2] search for an event [3] terminate this day [4] terminate this month.: ");
     scanf("%d", &action);
-
+//未完未完未完
     if(action == 1){
         printf("Yeah, %s, let's start for buliding an event.\n");
         char name[30];
