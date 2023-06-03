@@ -5,8 +5,6 @@
 #include <string.h>
 #define A_DAY 24
 
-//priority queue ongoing
-
 /*************************************test*******************************************/
 struct node{
     int strt_month;
@@ -20,6 +18,22 @@ struct node{
     char *others;
     struct node *next;
 };
+
+struct node *add_to_list(struct node *list,int st_mon,int st_da,bool who,bool aler,int str_t,int end_t,char* ac,char *pl,char *ot){
+    struct node *tmp;
+    tmp=malloc(sizeof(struct node));
+    strcpy(tmp->activity,ac);
+    tmp->strt_month=st_mon;
+    tmp->strt_day=st_da;
+    tmp->whole_day=who;
+    tmp->alert=aler;
+    tmp->strt_time=str_t;
+    tmp->end_time=end_t;
+    strcpy(tmp->place,pl);
+    strcpy(tmp->others,ot);
+    tmp->next=list;
+    return tmp;
+}
 /**************************************test*********************************************/
 
 int get_content_from_file(struct node *ptr) {                        //get content from file(**while(ptr->next!=NULL){ptr=ptr->next;})
@@ -125,12 +139,31 @@ struct node *annual_activity;
 
 void long_term_event(struct node *event_date_list, int month, int date, bool whole_day, bool alert, char *name, int start_time, int end_time, char *place, int remainder){
     char selection;
-    bool default=1;
-    static int this_year=(schedule->year+1);       //only declare this_year=year once
-    while(default){
-        printf("This activity a weekly event (press "w")
-        , a monthly event (press "m"), a annual event 
-        (press "y"), or none of them (press "n")\n");           //ask whether and which long term type
+    int normal_month_day[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+    int leap_month_day[12]={31,29,31,30,31,30,31,31,30,31,30,31};
+    if(isleap(my_schedule->year)){   //default of improper input of date
+        if(date>leap_month_day[month-1]){
+            printf("Invalid Input!!!\n");
+            return;
+        }
+    }else{
+        if(date>normal_month_day[month-1]){
+            printf("Invalid Input!!!\n");
+            return;
+        }
+    }
+    static int this_year=(my_schedule->year+1);       //only declare this_year=year once
+    if(this_year==my_schedule->year){  //if this year == year
+            while(annual_activity!=NULL){  //put every event in the annual_activity list into the event list
+                event_date_insert(event_date_list, annual_activity->strt_month, annual_activity->strt_day); //******************************
+                event_content_insert(event_date_list->event_content, annual_activity->activity,annual_activity->start_time,annual_activity->end_time,annual_activity->others);
+                annual_activity=annual_activity->next;
+            }
+            this_year++;  //this_year+1, so the events won't be add again till next year
+        }
+    int deflaw=1;
+    while(deflaw){
+        printf("This activity a weekly event (press w), a monthly event (press m), a annual event (press y), or none of them (press n)\n");           //ask whether and which long term type
         scanf("%c",&selection);                                 //select type
         switch(selection){
             case 'w':                                           // if is week, insert activity after every seven days
@@ -145,7 +178,7 @@ void long_term_event(struct node *event_date_list, int month, int date, bool who
                             event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
                         }
                    }else if(event_date_list->strt_month==2){    //if feb
-                        if(myschedule->year%4==0){              //heap year
+                        if(my_schedule->year%4==0){              //leap year
                             for(int i=event_date_list->strt_day;i<29;i+=7){
                                 event_date_insert(event_date_list, month, i/*date*/); //******************************
                                 event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
@@ -157,35 +190,35 @@ void long_term_event(struct node *event_date_list, int month, int date, bool who
                             }
                         }
                    }
-                    default=0;
+                    deflaw=0;
                     break;
             case 'm':                                           //if is a monthy activity
-                    for(int i=schedule->month;i<12;i++){  
-                        event_date_insert(event_date_list, i/*month*/, date); //******************************//every month same date
-                        event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                    for(int i=my_schedule->month;i<12;i++){  
+                        if(isleap(i)){
+                            if(date<=leap_month_day[i-1])
+                            event_date_insert(event_date_list, i/*month*/, date); //******************************//every month same date
+                            event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                        }else{
+                            if(date<=normal_month_day[i-1]){
+                                event_date_insert(event_date_list, i/*month*/, date); //******************************//every month same date
+                                event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                            }
+                        }  
                     }
-                    default=0;
+                    deflaw=0;
                     break;   
            case 'y':                                          //if is an annual event                  
-                    add_to_list(annual_activity,month,date,whole_day,alert,start_time,end_time,name,place,remainder); //add the event into annual_activity list
+                    annual_activity=add_to_list(annual_activity,month,date,whole_day,alert,start_time,end_time,name,place,remainder); //add the event into annual_activity list
                     event_date_insert(event_date_list, month, date); //******************************
                     event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
             case 'n':                                            //if not long term activity, just insert
                     event_date_insert(event_date_list, month, date); //******************************//that month that date
                     event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
-                    default=0;
+                    deflaw=0;
                     break;
             default:
-                    printf("Invalid input!!\n");
+                    printf("Invalid input!!\n"); //if(variable default isn't set to zero, the function will ask again in the while loop)
                     break;
-        }
-        if(this_year==schedule->year){  //if this year == year
-            while(annual_activity!=NULL){  //put every event in the annual_activity list into the event list
-                event_date_insert(event_date_list, annual_activity->strt_month, annual_activity->strt_day); //******************************
-                event_content_insert(event_date_list->event_content, annual_activity->activity,annual_activity->start_time,annual_activity->end_time,annual_activity->others);
-                annual_activity=annual_activity->next;
-            }
-            this_year++;  //this_year+1, so the events won't be add again till next year
         }
     }
 }
@@ -193,30 +226,125 @@ void long_term_event(struct node *event_date_list, int month, int date, bool who
 /**************************************priority queue************************************/
 struct priority_queue{
     int time;
-    struct node *event;
+    struct node *event;              //put ptr,which stores all info including month, date...
 };
 
-struct priority_queue day_tree[100];
+int tree_size=0;                      //global variable trace size of tree
+struct priority_queue day_tree[100];  //only for the schedule of a day
 
-void pop(struct  priority_queue *day_tree){
-    while(day_tree[0]->event_content){
-        printf("%s",day_tree[0]->event_content);
-        day_tree[0]->event_content=day_tree[0]->event_content->next;
+void swap(struct priority_queue *a,struct priority_queue *b) {  //swap info in day_tree
+   struct priority_queue temp=*a;
+    *a=*b;
+    *b=temp;
+}
+
+struct node *pop(struct  priority_queue *day_tree){   //pop out the smallest time's event name
+    struct node *pop_activity=NULL;                   //store the ptr being popping out
+    pop_activity=malloc(sizeof(struct node));
+    if (tree_size<=0) {                               //if tree_size<=0, no more event
+        struct node *no_activity=malloc(sizeof(struct node));
+        no_activity->activity=malloc(30);
+        no_activity->activity="No more activity today.";   //make the string printing out the msg
+        pop_activity=no_activity;
+        return pop_activity;                             //return the msg
+    }
+    pop_activity=day_tree[0].event;                    //if tree_size!=0, set popping out activity pointing to the first(day_tree[0])'s event
+    day_tree[0]=day_tree[tree_size-1];                 //let the last activity=the first
+    tree_size--;                                       //minus one so the size shrink one, the last activity got rid
+    int currentIndex=0;                                //start comparing from [0]
+    while (1) {
+        int leftChild=2*currentIndex+1;               //L_child
+        int rightChild=2*currentIndex+2;              //R_child
+        int smallest=currentIndex;
+        if((leftChild<tree_size)&&(day_tree[leftChild].time<day_tree[smallest].time)){  //L_child is not over the bound(size)&&the time of [small] is bigger, then the [small] should "sink" into the lower(further away from being print)
+            smallest=leftChild;
+        }
+        if((rightChild<tree_size)&&(day_tree[rightChild].time>day_tree[smallest].time)){//R_child is not over the bound(size)&&the time of [small] is bigger, then the [small] should "sink" into the lower(further away from being print)
+            smallest=rightChild;
+        }
+        if(smallest!=currentIndex){                               //exchange the content
+            swap(&day_tree[currentIndex],&day_tree[smallest]); 
+            currentIndex=smallest;
+        }else{                                                     //when the first([0],root) is the smallest time, stop
+            break;                     
+        }
+    }
+    return pop_activity;           //return day_tree[0].event
+}
+
+void push(struct priority_queue *day_tree, int strt_time, struct node *list ){
+    if (tree_size>=100) {                 //over the max size of day_tree
+        printf("The schedule for today is full.\n");
+        return;
+    }
+    day_tree[tree_size].time=strt_time;              //put info into the empty arr
+    day_tree[tree_size].event=list;
+    int currentIndex=tree_size;
+    int parentIndex=(currentIndex-1)/2;
+    while ((currentIndex>0)&&(day_tree[currentIndex].time<day_tree[parentIndex].time)) {  //if time < parent, "float" up into [smaller] arr(cuz [smaller] print out first)
+        swap(&day_tree[currentIndex], &day_tree[parentIndex]);
+        currentIndex=parentIndex;
+        parentIndex=(currentIndex-1)/2;
+    }
+    tree_size++;                  //tree_size+1
+}
+
+void clean_day_tree(){                 //reset the whole day_tree
+    for(int i=0;i<100;i++){
+        day_tree[i].time=-1;
+        day_tree[i].event=NULL;
+    }
+}
+
+void delete(struct priority_queue *day_tree, int strt_time){  //delete the time of event
+    int i;
+    for(i=0;i<tree_size;i++) {                               //look for the time
+        if (day_tree[i].time==strt_time) {                   //if found
+            day_tree[i]=day_tree[tree_size-1];               //set the time to last arr 
+            tree_size--;                                     //minus one in size (so the last arr become the former [last-1])
+            break;
+        }
+    }
+    if (i==tree_size) {                                       //if not find event at the time
+        printf("No event at the time.\n");
+    }else{                                                    //do the  "float" and "sink" same as pop
+        int currentIndex=i;
+        int parentIndex=(currentIndex-1)/2;
+        if ((currentIndex>0)&&(day_tree[currentIndex].time<day_tree[parentIndex].time)) {     //if the time replacing the user_enter_time is smaller than parent
+            while (currentIndex>0&&day_tree[currentIndex].time<day_tree[parentIndex].time) {
+                swap(&day_tree[currentIndex],&day_tree[parentIndex]);                           //keep exchane till bigger than parent
+                currentIndex=parentIndex;
+                parentIndex=(currentIndex-1)/2;
+            }
+        } else {
+            while (1) {
+                int leftChild=2*currentIndex+1;
+                int rightChild=2*currentIndex+2;
+                int smallest=currentIndex;
+                if((leftChild<tree_size)&&(day_tree[leftChild].time<day_tree[smallest].time)){
+                    smallest=leftChild;
+                }
+                if((rightChild<tree_size)&&(day_tree[rightChild].time<day_tree[smallest].time)){
+                    smallest=rightChild;
+                }
+                if(smallest!=currentIndex) {
+                    swap(&day_tree[currentIndex],&day_tree[smallest]);
+                    currentIndex=smallest;
+                } else {
+                    break;
+                }
+            }
+        }
     }
     
 }
-struct node *push(struct priority_queue *day_tree, int strt_time, struct node *list ){
 
-}
-struct node *delete(struct priority_queue *day_tree, int strt_time){
-
-}
-/**************************************priority queue************************************/
-
-/****************************************test********************************************/
-struct node *add_to_list(struct node *list,int st_mon,int st_da,bool who,bool aler,int str_t,int end_t,char* ac,char *pl,char *ot){
+struct node *add_to_ptrlist(struct node *list,int st_mon,int st_da,bool who,bool aler,int str_t,int end_t,char* ac,char *pl,char *ot){  //for testing, put thing in ptr altogather
     struct node *tmp;
     tmp=malloc(sizeof(struct node));
+    tmp->activity=malloc(strlen(ac)+1);  //allocate memory for activity
+    tmp->place=malloc(strlen(pl)+1);     //allocate memory for place
+    tmp->others=malloc(strlen(ot)+1);    //allocate memory for others
     strcpy(tmp->activity,ac);
     tmp->strt_month=st_mon;
     tmp->strt_day=st_da;
@@ -226,15 +354,16 @@ struct node *add_to_list(struct node *list,int st_mon,int st_da,bool who,bool al
     tmp->end_time=end_t;
     strcpy(tmp->place,pl);
     strcpy(tmp->others,ot);
-    tmp->next=list;
     return tmp;
 }
+/**************************************priority queue************************************/
 
-int main(){
+/****************************************test********************************************/
+int main(){                                                                     //test for file i/o
     struct node *ptr=NULL,*rec=malloc(sizeof(struct node));
     rec->next=NULL;
-    ptr=add_to_list(ptr,5,5,1,1,9,20,"walk sheep","ROS","bring gress");
-    ptr=add_to_list(ptr,7,2,1,1,8,16,"take test","hell","bring pen");
+    ptr=add_to_ptrlist(ptr,5,5,1,1,9,20,"walk sheep","ROS","bring gress");
+    ptr=add_to_ptrlist(ptr,7,2,1,1,8,16,"take test","hell","bring pen");
     write_content_on_file(ptr);
     get_content_from_file(rec);
     while(rec->next!=NULL){
@@ -245,4 +374,31 @@ int main(){
     }
     return 0;
 }
+
+int main() {                                                                 //test for priority queue
+    struct node *ptr=NULL,*rec=malloc(sizeof(struct node));
+    rec->next=NULL;
+    ptr=add_to_ptrlist(ptr,5,5,1,1,9,20,"walk sheep","ROS","bring gress");
+    push(day_tree,ptr->strt_time,ptr);
+    ptr=add_to_ptrlist(ptr,7,2,1,1,8,16,"take test","hell","bring pen");
+    push(day_tree,ptr->strt_time,ptr);
+    struct node *popped=pop(day_tree);
+    printf("%s\n",popped->activity);
+    ptr=add_to_ptrlist(ptr,7,2,1,1,8,16,"take test","hell","bring pen");
+    push(day_tree,ptr->strt_time,ptr);
+    delete(day_tree,9);
+    popped=pop(day_tree);
+    printf("%s\n",popped->activity);
+    popped=pop(day_tree);
+    printf("%s\n",popped->activity);
+    popped=pop(day_tree);
+    printf("%s\n",popped->activity);
+    free(popped->activity);
+    free(popped->place);
+    free(popped->others);
+    free(popped);
+    free(rec);
+    return 0;
+} 
 /****************************************test*************************************************/
+
