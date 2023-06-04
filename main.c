@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+enum activity_type{WORK, CELEBRATION, LEISURE};
+
 typedef struct event_content{
     char *name; //name of event
     int start_time; //unit: hour
@@ -148,11 +150,13 @@ void print_list2(Event_content *list){
     }
 }
 
+
+
 void remove_enter(char *sentence){
     /* deal with '\0' */
     char *str = sentence;
     for(; *str && *str != '\n'; str++);
-    *str = '\0';
+    if(*str == '\n') *str = '\0';
 }
 
 int isleap(int year){ //return 1 if leapyear; return 0 if normal year
@@ -191,6 +195,37 @@ int find_weekday(int year,int month,int date){
     return d;
 }
 
+int to_new_day(int curr_date){
+    int year = curr_date / 10000;
+    int day = curr_date % 100;
+    int month = (curr_date % 10000) /100;
+
+    if(day < 28) return curr_date+1;
+    else if(day == 28){
+        if(month == 2){
+            if(isleap(year)) return curr_date+1;
+            else return curr_date - 28 + 101;
+        }
+        else return curr_date+1;
+    }
+    else if(day == 29){
+        if(isleap(year)) return curr_date - 29 + 101;
+        else return curr_date+1;
+    }    
+    else if(day == 30){
+        if(((month == 1 || month == 3) || (month == 5 || month == 7)) || ((month == 8 || month == 10) || month == 12)) return curr_date + 1;
+        else return curr_date - 30 + 101;
+    }
+    else if(month == 12) return curr_date - 1231 + 10001;
+    else return curr_date - 31 + 101;
+}
+
+int to_new_month(int date){
+    date -= date % 100;
+    if(date%10000 == 1200) return date - 1200 + 10101;
+    return date + 101;
+}
+
 void print_calendar(int year,int month,int date){
     //system("CLS");
     int day[12]={31,28,31,30,31,30,31,31,30,31,30,31};
@@ -211,9 +246,9 @@ void print_calendar(int year,int month,int date){
             printf("|");
         }
     }
-    if(month==2&&isleap(year)==1){
+    if(month == 2 && isleap(year) == 1){
         printf(" %2d  \n");//what is "%d" here
-    }else if(d==6){
+    }else if(d == 6){
         printf("\n");
     }else{
         printf("\n");
@@ -223,11 +258,103 @@ void print_calendar(int year,int month,int date){
     return;
 }
 
+void game_1a2b(int *points_of_master){
+    int play = 0;
+    while(1){
+        printf("\n");
+        printf("\033[1;37;43m1A2B is a puzzle game.\n");
+        printf("If the number what you guess is in the right place then you get 1A.\n");
+        printf("If the number is in the number but not in the right place would get 1B.\n");
+        printf("If you can guess the correct number less than or equal to 9 times, \n");
+        printf("you can get random points from 2,000 to 200,000\n");
+        printf("Do you want to play 1A2B ? (No: 0/ Yes: 1) : \033[m");
+        scanf("%d", &play);
+        if(play == 1) break;
+        else if(play == 0) return;
+        else{
+            invalid_input_message();
+        }
+    }
+    int answer[4];  // Array to store the answer
+    for(int i = 0; i < 4; i++){
+        while(1){
+            answer[i] = rand() % 10; // Generate a random number between 0 and 9
+            bool is_the_same = false;
+            for(int j = 0; j < i; j++){
+                if(answer[j] == answer[i]){
+                    is_the_same = true;
+                }
+            }
+            if(is_the_same == false) break; 
+        }
+    }
+
+    int guess_count = 0;
+    char guess_number[100];
+    while(guess_count < 20){
+        printf("This is your %dth guess : ", guess_count + 1);
+        scanf("%s", &guess_number);
+        if(strlen(guess_number) != 4){
+            invalid_input_message();
+            printf("\033[37;41mNotice the length must be 4 digits.\033[m\n");
+            continue;
+        }
+        bool is_all_digit = true;
+        for(int i = 0 ; i < 4; i++){
+            if(guess_number[i] >= '0' && guess_number[i] <= '9'){
+                guess_number[i] -= 48; // Convert character to integer by subtracting ASCII value of '0'
+            }
+            else{
+                is_all_digit = false;
+            }
+        }
+        if(is_all_digit == false){
+            invalid_input_message();
+            printf("\033[37;41mYou must input a 4 digit number.\033[m\n");
+            continue;
+        }
+        bool have_same_number = false;
+        for(int i = 0; i < 3; i++){
+            for(int j = i + 1; j < 4; j++){
+                if(guess_number[i] == guess_number[j]) have_same_number = true;
+            }
+        }
+        if(have_same_number == true){
+            invalid_input_message();
+            printf("\033[37;41mThe four digits must be different.\033[m\n");
+            continue;
+        }
+        int A_num = 0, B_num = 0;
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                if(guess_number[i] == answer[j]){
+                    if(i == j) A_num++;
+                    else B_num++;
+                }
+            }
+        }
+        if(A_num == 4){
+            printf("All correct.\n");
+            int prize = ((rand() % 100) + 1) * 1000;
+            *points_of_master += prize;
+            printf("You win %d points.\n", prize);
+            return;
+        }
+        else{
+            printf("%dA%dB\n", A_num, B_num);
+            guess_count++;
+        }
+    }
+    printf("You have been no chance already.\n");
+}
 
 int main() {
     char user_name[50];
+    int points_of_master = 0;
     int action;
-    
+    int today;
+    int working_hour;
+    {
     printf("Hello master, what should I call you.: ");
     scanf("%s", user_name);
 
@@ -235,50 +362,80 @@ int main() {
     printf("Hello %s, please enter when do you want to start your calender(e.g. 2025 05 16): ");
     scanf("%d %d %d",&year,&month,&date);
     print_calendar(year,month,date);
-
+    today = 10000 * year + 100 * month + date;
     printf("Next, %s ,What kind of action do you want to do\n", user_name);
-    printf(" [1] enter a new event [2] search for an event [3] terminate this day [4] terminate this month.: ");
+    printf(" [1] enter a new event [2] search for an event [3] print out the schedule [4] terminate this day [5] terminate this month.: ");
     scanf("%d", &action);
-//未完未完未完
+    }
+
     if(action == 1){
         printf("Yeah, %s, let's start for buliding an event.\n");
         char name[30];
         int start_month, end_month, start_date, end_date;
         printf("Please enter your event's name(limited in 28 words): ");
         scanf("%29s", name);
-        printf("Please enter the start month and date of your event(use spaces to seperate the two numbers, e.g.[10 31]): ");
+        printf("Please enter the start month and date of your event (use spaces to seperate the two numbers, e.g.[10 31]): ");
         scanf("%d %d", &start_month, &start_date);
-        printf("Please enter the end month and date of your event(use spaces to seperate the two numbers, e.g.[12 25]: ");
+        printf("Please enter the end month and date of your event (use spaces to seperate the two numbers, e.g.[12 25]: ");
         scanf("%d %d", &end_month, &end_date);
         printf("\n");
         
         int start_time, end_time;
         bool is_whole_day;
         char temp;
-        int remainder;//???????????????
-        printf("Is it a whole day function(Y or N): ");
+        int remainder;
+        printf("Is it a whole day function (Y or N): ");
         scanf(" %c", &temp);
         if(temp == 'Y'){
             start_time = 0000;
             end_time = 2400;
         }
         else if(temp == 'N'){
-            printf("What is the start time of the event(using 24-hour clock, e.g.1500): ");
+            printf("What is the start time of the event (using 24-hour clock, e.g.1500): ");
             scanf("%d", &start_time);
-            printf("What is the end time of the event(using 24-hour clock, e.g.1500): ");
+            printf("What is the end time of the event (using 24-hour clock, e.g.1500): ");
             scanf("%d", &end_time);
         }
         else printf("Error in setting event's lasting time\n");
         event_content_insert(start_month, end_month, start_date, end_date, name, start_time, end_time, remainder);   
     }
-    else if(action == 2){
+    else if(action == 2){ //[2] search for an event
 
     }
-    else if(action == 3){
+    else if(action == 3){ //[3] print out the schedule 
 
     }
-    else if(action == 4){
-
+    else if(action == 4){ //[4] terminate this day 
+        int ans1;
+        print("How was your day? Congratulations on making it through!\n");
+        printf("Did you manage to complete all the tasks for today (Y or N): ");
+        scanf("%d", &ans1);
+        if(ans1 == 'Y'){
+            print("Excellent! Congratulations on scoring 500 points.\n");
+            print("Let's play a little game to relax.\n");
+            game_1a2b(points_of_master);
+        }
+        else if(ans1 == 'N'){
+            print("Don't worry, rest is essential to embark on a longer journey.\n");
+            print("You still scored 300 points. Keep up the good work and continue to strive tomorrow.\n");
+        }
+        today = to_new_day(today);
+    }
+    else if(action == 5){ //[5] terminate this month.: 
+        int ans1;
+        print("How was your month? Congratulations on making it through!\n");
+        printf("Did you manage to complete all the tasks for this month (Y or N): ");
+        scanf("%d", &ans1);
+        if(ans1 == 'Y'){
+            print("Excellent! Congratulations on scoring 5000 points.\n");
+            print("Let's play a little game to relax.\n");
+            game_1a2b(points_of_master);
+        }
+        else if(ans1 == 'N'){
+            print("Don't worry, rest is essential to embark on a longer journey.\n");
+            print("You still scored 3000 points. Keep up the good work and continue to strive tomorrow.\n");
+        }
+        today = to_new_month(today);
     }
 
 }
