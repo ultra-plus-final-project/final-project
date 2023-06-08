@@ -259,13 +259,13 @@ struct node *pop(struct  priority_queue *day_tree){   //pop out the smallest tim
         if((leftChild<tree_size)&&(day_tree[leftChild].time<day_tree[smallest].time)){  //L_child is not over the bound(size)&&the time of [small] is bigger, then the [small] should "sink" into the lower(further away from being print)
             smallest=leftChild;
         }
-        if((rightChild<tree_size)&&(day_tree[rightChild].time>day_tree[smallest].time)){//R_child is not over the bound(size)&&the time of [small] is bigger, then the [small] should "sink" into the lower(further away from being print)
+        if((rightChild<tree_size)&&(day_tree[rightChild].time<day_tree[smallest].time)){//R_child is not over the bound(size)&&the time of [small] is bigger, then the [small] should "sink" into the lower(further away from being print)
             smallest=rightChild;
         }
-        if(smallest!=currentIndex){                               //exchange the content
+        if(smallest!=currentIndex){                               //exchange the content if the former last array is not yet in the right place that is smaller than its children
             swap(&day_tree[currentIndex],&day_tree[smallest]); 
             currentIndex=smallest;
-        }else{                                                     //when the first([0],root) is the smallest time, stop
+        }else{                                                     //when the the former last is no longer bigger than any of its children
             break;                     
         }
     }
@@ -307,17 +307,17 @@ void delete(struct priority_queue *day_tree, int strt_time){  //delete the time 
     }
     if (i==tree_size) {                                       //if not find event at the time
         printf("No event at the time.\n");
-    }else{                                                    //do the  "float" and "sink" same as pop
+    }else{                                                    //do the  "float" and "sink" same as pop and push
         int currentIndex=i;
         int parentIndex=(currentIndex-1)/2;
-        if ((currentIndex>0)&&(day_tree[currentIndex].time<day_tree[parentIndex].time)) {     //if the time replacing the user_enter_time is smaller than parent
-            while (currentIndex>0&&day_tree[currentIndex].time<day_tree[parentIndex].time) {
+        if ((currentIndex>0)&&(day_tree[currentIndex].time<day_tree[parentIndex].time)) {     //do same as push when the one being delete is not root, and see if the time replacing the user_enter_time is smaller than parent
+            while(currentIndex>0&&day_tree[currentIndex].time<day_tree[parentIndex].time) {
                 swap(&day_tree[currentIndex],&day_tree[parentIndex]);                           //keep exchane till bigger than parent
                 currentIndex=parentIndex;
                 parentIndex=(currentIndex-1)/2;
             }
-        } else {
-            while (1) {
+        } else {                                              //do the same as pop when the one being removed is root
+            while(1) {
                 int leftChild=2*currentIndex+1;
                 int rightChild=2*currentIndex+2;
                 int smallest=currentIndex;
