@@ -3,8 +3,12 @@
 #include <string.h>
 #include <stdbool.h>
 #define A_DAY_HOUR 24
-
+int today;
 enum activity_type{WORK, CELEBRATION, LEISURE};
+
+int return_today(){
+    return today;
+}
 
 typedef struct event_date{
     int month;
@@ -20,7 +24,6 @@ typedef struct event_content{
     char *others;
     int start_time; //unit: hour
     int end_time; //unit: hour
-    int remainder; //0: the moment; 1: one hour ago; -1: no remainder //maybe add notes function...
     struct event_content *next; //point to next node
 }Event_content;
 
@@ -52,7 +55,6 @@ int main() {
     char user_name[50];
     int points_of_master = 0;
     int action;
-    int today;
     int working_hour;
     {//initialize
     printf("Hello master, what should I call you.: ");
@@ -199,7 +201,7 @@ Event_date *find_current_date(int start_month, int start_date){
     
 }
 
-void event_content_insert(int start_month, int end_month, int start_date, int end_date, char *name, int start_time, int end_time, int remainder){
+void event_content_insert(int start_month, int end_month, int start_date, int end_date, char *name, int start_time, int end_time){
     /*
     In this function, we have few steps to do
     1. find if the day has any activity before, if not, then add a nw node of event_date
@@ -225,7 +227,6 @@ void event_content_insert(int start_month, int end_month, int start_date, int en
     new_event_content -> name = name;
     new_event_content -> start_time = start_time;
     new_event_content -> end_time = end_time;
-    new_event_content -> remainder = remainder;
     new_event_content -> next = NULL;
 
  //***********************************待檢查
@@ -461,76 +462,17 @@ void game_1a2b(int *points_of_master){
 }
 
 
-int get_content_from_file() { //get content from file(**while(ptr->next!=NULL){ptr=ptr->next;})
-    FILE *input_file;                                           
-    char line[350]; 
-    memset(line,'\0', sizeof(line));                                  
-    input_file = fopen("input.txt", "r");                           //connect input_file to input.txt (read only)
-    if (input_file == NULL) {                                       //if fail connecting
-        printf("Error opening input file!\n");
-        return 0;  
-    }
-    int tmp_start_month, tmp_start_date, tmp_end_month, tmp_end_date;
-    
-    int tmp_whole_day, tmp_start_time, tmp_end_time;
-
-    while (fgets(line, sizeof(line), input_file) != NULL) {        //put a line of input_file into line 
-        sscanf(line,"%d %d %d %d %d %d",                          //distribute the things in line to ptr
-               &(tmp_start_month), &(tmp_start_date),
-               &(tmp_end_month), &(tmp_end_date),
-               &(tmp_whole_day), &(tmp_start_time), &(tmp_end_time));
-
-        Event_content *ptr;
-        char *token;
-        token = strtok(line,",");                                 //split the strings using commas as separators
-        if (token != NULL) {
-            ptr->name = strdup(token);                        //activity is the first string before ","
-        }
-        token=strtok(NULL,",");                                //split the strings using commas as separators
-        if (token!=NULL) {
-             ptr->place=strdup(token);                         //place is the second string before ","
-        }
-        token=strtok(NULL,",");                              //split the strings using commas as separators
-        if (token!=NULL) {
-             ptr->others=strdup(token);                       //others is the first string before ","
-        }
-        event_content_insert();
-        ptr->next = (struct event_content*)malloc(sizeof(struct event_content));  //allocate memory for the next node
-        ptr = ptr->next;                                        //move to the next node
-        ptr->next=NULL;                                       //set the next pointer to NULL for the last node
-    }
-    fclose(input_file);                                         //close the file
-    return 1;
-}
-int write_content_on_file(struct event_content *ptr){                    //write content on file
-    FILE *output_file;
-    output_file=fopen("output.txt","w");                        //connect output_file with output.txt (write only)
-    if (output_file == NULL) {
-        printf("Error opening output file!\n");                 //if fail connecting
-        return 1;
-    }
-    while(ptr!=NULL){                                           //put info into file
-        fprintf(output_file,"%d/%d %d %d %d %d %s %s %s\n",ptr->strt_month,\
-        ptr->strt_day,ptr->whole_day,ptr->alert,ptr->strt_time,ptr->end_time\
-        ,ptr->activity,ptr->place,ptr->others);
-        ptr=ptr->next;
-    }
-    fclose(output_file);                                        //close the file
-    return 1;
-}
-
 int search_if_the_day_have_activity(int month, int date){
     
     Event_date *tmp = date_head;
     while(date_head != NULL){
-        if((tmp->month == month) && (tmp.date == date)) return 1;
+        if((tmp->month == month) && (tmp->date == date)) return 1;
         else tmp = tmp->next;
     }
     if(tmp == NULL){
         return 0;
     }
 }
-
 
 int search_if_the_time_have_activity(struct event_content *list,int start_time, int end_time, int command){ //search if have things to do at the time
     /* 
@@ -557,44 +499,61 @@ int search_if_the_time_have_activity(struct event_content *list,int start_time, 
     }
 }
 
-
-
 void search_all_day_free_time(struct event_content *ptr){                //consider ptr sorted
-    int free_time_str=0;
-    struct event_content *tmp=ptr;
-    while((tmp!=NULL)){
-        if(free_time_str<(ptr->strt_time)){                     //if free time is smaller than the first activity's star time, it is free    
+    int free_time_str = 0;
+    struct event_content *tmp = ptr;
+    while((tmp != NULL)){
+        if(free_time_str < (ptr->start_time)){                     //if free time is smaller than the first activity's star time, it is free    
             printf("You have free time from %d to %d.\n"
-            ,free_time_str,ptr->strt_time);                     //have the free time till the closest activity start
+            ,free_time_str, ptr->start_time);                     //have the free time till the closest activity start
         }
-        free_time_str=ptr->end_time;                            //set the free time start count point at the end of the activity
-        tmp=tmp->next;                                          //go to the next closest activity
+        free_time_str = ptr->end_time;                            //set the free time start count point at the end of the activity
+        tmp = tmp->next;                                          //go to the next closest activity
     }
-    if(free_time_str<A_DAY_HOUR){
-        printf("You have free time from %d to %d.\n"
-        ,free_time_str,A_DAY_HOUR);                                  //if no more activity, it is free till 24
+    if(free_time_str < A_DAY_HOUR){
+        printf("You have free time from %d to %d.\n", free_time_str, A_DAY_HOUR);                                  //if no more activity, it is free till 24
     }       
 }
-void search_scheduled_time_through_activity(struct event_content *list,char *activity){
-     bool have_the_activity_or_not=1;
-     while(list!=NULL){
-        if(strcmp(list->activity,activity)==0){                 //if there's this activity in schedule
-            printf("You have the activity from %d to %d"
-            ,list->strt_time,list->end_time);                   //print the activity name and time
-            have_the_activity_or_not=0;
+
+void search_scheduled_time_through_activity(struct event_content *list, char *activity_name){
+    /*
+    This function is to look for the time when the activity takes place.
+    1. look through the list and find the activity
+        (1) if it finds, it will print out the time the activity starts and ends.
+        (2) if not, it will print no-message.
+    */
+    bool have_the_activity_or_not = 0;
+    while(list != NULL){
+        if(strcmp(list->name, activity_name) == 0){                 //if there's this activity in schedule
+            printf("You have the activity from %d to %d", list->start_time,list->end_time); //print the activity name and time
+            have_the_activity_or_not = 1;
         }
         list=list->next;                                        //if not find yet, go on the next
     }
-    if(have_the_activity_or_not){
+    if(!have_the_activity_or_not){
         printf("You don't have activity today\n");              // if not find an activity for the whole list
     }
 }
+
 struct event_content *annual_activity;
-void long_term_event(struct event_content *event_date_list, int month, int date, bool whole_day, bool alert, char *name, int start_time, int end_time, char *place, int remainder){
+
+void long_term_event(struct event_content *event_date_list, int month, int date, bool whole_day, bool alert, char *name, int start_time, int end_time, char *place, int remainder, int today){
+    /*
+    This function is to help user repeat the function automatically.
+    1. It will receive a character representing four periods of time.
+        (1) w: weekly (2) m: monthly (3) a: annually” and (4) n: do not repeat
+    2. It will then put the event into the schedule automatically in different periods of time that user prefers.
+    3. when it comes to the annual event
+        (1) the function will insert the event into the date of the year and the annual_activity list, which is a global variable.
+        (2) As there is a static declaration of “this_year” that will only be declared once,
+    each time the function is called, the function will check if “this_year” equals “year”. If the equality is true, every activity in the annual_activity list will be inserted into the event list, and plus one to “this_year”, so that the activities won’t be added again until the next year.
+
+    */
+    
     char selection;
     int normal_month_day[12]={31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     int leap_month_day[12]={31,29,31,30,31,30,31,31,30,31,30,31};
-    if(isleap(my_schedule->year)){   //default of improper input of date
+    if(isleap(today / 10000)){   //default of improper input of date
         if(date>leap_month_day[month-1]){
             printf("Invalid Input!!!\n");
             return;
@@ -605,8 +564,9 @@ void long_term_event(struct event_content *event_date_list, int month, int date,
             return;
         }
     }
-    static int this_year=(my_schedule->year+1);       //only declare this_year=year once
-    if(this_year==my_schedule->year){  //if this year == year
+    
+    static int this_year= ((today/10000) + 1); //the program will only declare this_year=year once
+    if(this_year == (today / 10000)){  //if this year == year
             while(annual_activity!=NULL){  //put every event in the annual_activity list into the event list
                 event_date_insert(event_date_list, annual_activity->strt_month, annual_activity->strt_day); //******************************
                 event_content_insert(event_date_list->event_content, annual_activity->activity,annual_activity->start_time,annual_activity->end_time,annual_activity->others);
@@ -620,7 +580,7 @@ void long_term_event(struct event_content *event_date_list, int month, int date,
         scanf("%c",&selection);                                 //select type
         switch(selection){
             case 'w':                                           // if is week, insert activity after every seven days
-                   if(month==1||month==3||month==5||month==7||month==8||month==10||month==12){ //if big month
+                   if(((month==1||month==3) || (month==5||month==7)) || ((month==8||month==10) || month==12)){ //if big month
                         for(int i=event_date_list->strt_day;i<31;i+=7){
                             event_date_insert(event_date_list, month, i/*date*/); //******************************
                             event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
@@ -811,44 +771,4 @@ struct node *add_to_ptrlist(struct node *list,int st_mon,int st_da,bool who,bool
 }
 /**************************************priority queue************************************/
 /****************************************test********************************************/
-int main(){                                                                     //test for file i/o
-    struct node *ptr=NULL,*rec=malloc(sizeof(struct node));
-    rec->next=NULL;
-    ptr=add_to_ptrlist(ptr,5,5,1,1,9,20,"walk sheep","ROS","bring gress");
-    ptr=add_to_ptrlist(ptr,7,2,1,1,8,16,"take test","hell","bring pen");
-    write_content_on_file(ptr);
-    get_content_from_file(rec);
-    while(rec->next!=NULL){
-        printf("%d/%d %d %d %d %d %s %s %s\n",rec->strt_month,\
-        rec->strt_day,rec->whole_day,rec->alert,rec->strt_time,rec->end_time\
-        ,rec->activity,rec->place,rec->others);
-        rec=rec->next;
-    }
-    return 0;
-}
-int main() {                                                                 //test for priority queue
-    struct node *ptr=NULL,*rec=malloc(sizeof(struct node));
-    rec->next=NULL;
-    ptr=add_to_ptrlist(ptr,5,5,1,1,9,20,"walk sheep","ROS","bring gress");
-    push(day_tree,ptr->strt_time,ptr);
-    ptr=add_to_ptrlist(ptr,7,2,1,1,8,16,"take test","hell","bring pen");
-    push(day_tree,ptr->strt_time,ptr);
-    struct node *popped=pop(day_tree);
-    printf("%s\n",popped->activity);
-    ptr=add_to_ptrlist(ptr,7,2,1,1,8,16,"take test","hell","bring pen");
-    push(day_tree,ptr->strt_time,ptr);
-    delete(day_tree,9);
-    popped=pop(day_tree);
-    printf("%s\n",popped->activity);
-    popped=pop(day_tree);
-    printf("%s\n",popped->activity);
-    popped=pop(day_tree);
-    printf("%s\n",popped->activity);
-    free(popped->activity);
-    free(popped->place);
-    free(popped->others);
-    free(popped);
-    free(rec);
-    return 0;
-} 
-/****************************************test*************************************************/
+
