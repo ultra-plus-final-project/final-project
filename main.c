@@ -29,15 +29,17 @@ typedef struct event_content{
 
 Event_date *date_head = NULL;
 
-Event_date *event_date_insert(int month, int date);
+Event_date *event_date_insert(int month, int date, int command);
 
-void event_content_insert(int start_month, int end_month, int start_date, int end_date, char *name, int start_time, int end_time, int remainder);
+void event_content_insert(int month, int date, char *name, int start_time, int end_time, char* place, char* others);
 
 void print_event_date_list(Event_date *list);
 
 void print_event_content_list(Event_content *list);
 
 void remove_enter(char *sentence);
+
+char ask_event_length(int month, int date);
 
 int isleap(int year);
 
@@ -50,6 +52,8 @@ int to_new_month(int date);
 void print_calendar(int year,int month,int date);
 
 void game_1a2b(int *points_of_master);
+
+int check_if_already_have_event(Event_date *date_head,int month,int date);
 
 int main() {
     char user_name[50];
@@ -97,9 +101,13 @@ int main() {
             scanf("%d", &start_time);
             printf("What is the end time of the event (using 24-hour clock, e.g.1500): ");
             scanf("%d", &end_time);
+            //
+            printf("Where is the place of the event (using 24-hour clock, e.g.1500): ");
+            scanf("%d", &end_time);
+            
         }
         else printf("Error in setting event's lasting time\n");
-        event_content_insert(start_month, end_month, start_date, end_date, name, start_time, end_time, remainder);   
+        event_content_insert(start_month, start_date, name, start_time, end_time, place, others);   
     }
     else if(action == 2){ //[2] search for an event
 
@@ -109,13 +117,13 @@ int main() {
     }
     else if(action == 4){ //[4] terminate this day 
         int ans1;
-        print("How was your day? Congratulations on making it through!\n");
+        printf("How was your day? Congratulate on making it through!\n");
         printf("Did you manage to complete all the tasks for today (Y or N): ");
         scanf("%d", &ans1);
         if(ans1 == 'Y'){
-            print("Excellent! Congratulations on scoring 500 points.\n");
+            print("Excellent! Congratulates on scoring 500 points.\n");
             print("Let's play a little game to relax.\n");
-            game_1a2b(points_of_master);
+            game_1a2b(&points_of_master);
         }
         else if(ans1 == 'N'){
             print("Don't worry, rest is essential to embark on a longer journey.\n");
@@ -131,7 +139,7 @@ int main() {
         if(ans1 == 'Y'){
             print("Excellent! Congratulations on scoring 5000 points.\n");
             print("Let's play a little game to relax.\n");
-            game_1a2b(points_of_master);
+            game_1a2b(&points_of_master);
         }
         else if(ans1 == 'N'){
             print("Don't worry, rest is essential to embark on a longer journey.\n");
@@ -145,7 +153,7 @@ int main() {
 
 Event_date *event_date_insert(int start_month, int start_date, int command){
     /* allocate node */
-    Event_date *new_event_date = malloc(sizeof(struct event_date));
+    Event_date *new_event_date = malloc(sizeof(Event_date));
     
     if(new_event_date == NULL){
         printf("Error: malloc failed in event_date_insert\n");
@@ -201,7 +209,7 @@ Event_date *find_current_date(int start_month, int start_date){
     
 }
 
-void event_content_insert(int start_month, int end_month, int start_date, int end_date, char *name, int start_time, int end_time){
+void event_content_insert(int month, int date, char *name, int start_time, int end_time, char* place, char* others){
     /*
     In this function, we have few steps to do
     1. find if the day has any activity before, if not, then add a nw node of event_date
@@ -227,6 +235,8 @@ void event_content_insert(int start_month, int end_month, int start_date, int en
     new_event_content -> name = name;
     new_event_content -> start_time = start_time;
     new_event_content -> end_time = end_time;
+    new_event_content -> place = place;
+    new_event_content -> others = others;
     new_event_content -> next = NULL;
 
  //***********************************待檢查
@@ -248,6 +258,7 @@ void event_content_insert(int start_month, int end_month, int start_date, int en
         curr = curr->next;
     } */
 }   
+
 
 void print_event_date_list(Event_date *list){
   /* print start point for testing */
@@ -385,7 +396,7 @@ void game_1a2b(int *points_of_master){
         if(play == 1) break;
         else if(play == 0) return;
         else{
-            invalid_input_message();
+            printf("Invalid Input!!!\n");
         }
     }
     int answer[4];  // Array to store the answer
@@ -408,7 +419,7 @@ void game_1a2b(int *points_of_master){
         printf("This is your %dth guess : ", guess_count + 1);
         scanf("%s", &guess_number);
         if(strlen(guess_number) != 4){
-            invalid_input_message();
+            printf("Invalid Input!!!\n");
             printf("\033[37;41mNotice the length must be 4 digits.\033[m\n");
             continue;
         }
@@ -422,7 +433,7 @@ void game_1a2b(int *points_of_master){
             }
         }
         if(is_all_digit == false){
-            invalid_input_message();
+            printf("Invalid Input!!!\n");
             printf("\033[37;41mYou must input a 4 digit number.\033[m\n");
             continue;
         }
@@ -433,7 +444,7 @@ void game_1a2b(int *points_of_master){
             }
         }
         if(have_same_number == true){
-            invalid_input_message();
+            printf("Invalid Input!!!\n");
             printf("\033[37;41mThe four digits must be different.\033[m\n");
             continue;
         }
@@ -463,9 +474,8 @@ void game_1a2b(int *points_of_master){
 
 
 int search_if_the_day_have_activity(int month, int date){
-    
     Event_date *tmp = date_head;
-    while(date_head != NULL){
+    while( tmp != NULL){
         if((tmp->month == month) && (tmp->date == date)) return 1;
         else tmp = tmp->next;
     }
@@ -545,24 +555,29 @@ int get_content_from_file(Event_date *ptr) {                        //get conten
         return 0;  
     }
     while (fgets(line, sizeof(line), input_file) != NULL) {        //put a line of input_file into line 
-        sscanf(line,"%d.%d/%d %d-%d",                          //distribute the things in line to ptr
+        sscanf(line,"%d. %d/%d %d-%d",                          //distribute the things in line to ptr
                &(ptr->event_num),&(ptr->month), &(ptr->date),
               &(ptr->content->start_time),&(ptr->content->end_time));
         char *token;
+        Event_content *tmp_content = ptr-> content;
+        tmp_content = malloc(sizeof(Event_content));
         token=strtok(line,",");                                 //split the strings using commas as separators
         if (token!=NULL) {
-            ptr->content->name=strdup(token);                        //activity is the first string before ","
+            tmp_content->name=malloc(sizeof(token)+1);
+            tmp_content->name=strdup(token);                        //activity is the first string before ","
         }
         token=strtok(NULL,",");                                //split the strings using commas as separators
         if (token!=NULL) {
-             ptr->content->place=strdup(token);                         //place is the second string before ","
+            tmp_content->place=malloc(sizeof(token)+1);
+            tmp_content->place=strdup(token);                         //place is the second string before ","
         }
 
         token=strtok(NULL,",");                              //split the strings using commas as separators
         if (token!=NULL) {
-             ptr->content->others=strdup(token);                       //others is the first string before ","
+            tmp_content->others=malloc(sizeof(token)+1);
+            tmp_content->others=strdup(token);                       //others is the first string before ","
         }
-        ptr->next=(struct node*)malloc(sizeof(struct node));  //allocate memory for the next node
+        ptr->next=(Event_date*)malloc(sizeof(Event_date));  //allocate memory for the next node
         ptr=ptr->next;                                        //move to the next node
         ptr->next=NULL;                                       //set the next pointer to NULL for the last node
     }
@@ -577,7 +592,7 @@ int write_content_on_file(Event_date *ptr){                    //write content o
         return 1;
     }
     while(ptr!=NULL){                                           //put info into file
-        fprintf(output_file,"%d.%d/%d %d-%d %s, %s, %s\n",ptr->event_num,\
+        fprintf(output_file,"%d. %d/%d %d-%d %s,%s,%s\n",ptr->event_num,\
         ptr->month,ptr->date,ptr->content->start_time,ptr->content->end_time\
         ,ptr->content->name,ptr->content->place,ptr->content->others);
         ptr=ptr->next;
@@ -606,18 +621,19 @@ void long_term_event(Event_date *event_date_list, int month, int date, int start
     char selection;
     int normal_month_day[12]={31,28,31,30,31,30,31,31,30,31,30,31};
     int leap_month_day[12]={31,29,31,30,31,30,31,31,30,31,30,31};
-    static int this_year=((today/10000)+1);       //only declare this_year=year once
+    int year=((today/10000)+1);
+    static int this_year=year;       //only declare this_year=year once
     if(this_year==(today/10000)){  //if this year == year
             while(annual_activity!=NULL){  //put every event in the annual_activity list into the event list
                 event_date_insert(annual_activity->month,annual_activity->date,0);
-                event_content_insert(annual_activity->content->name,annual_activity->content->start_time,annual_activity->content->end_time,annual_activity->content->place,annual_activity->content->others);
+                event_content_insert(annual_activity->month,annual_activity->date,annual_activity->content->name,annual_activity->content->start_time,annual_activity->content->end_time,annual_activity->content->place,annual_activity->content->others);
                 annual_activity=annual_activity->next;
             }
             this_year++;  //this_year+1, so the events won't be add again till next year
         }
     int deflaw=1;
-    while(deflaw){
-       selection=ask_event_length(int month, int date);
+    while(deflaw){     
+       selection=ask_event_length(month,date);
         switch(selection){
             case 'w':                                           // if is week, insert activity after every seven days
                    if(month==1||month==3||month==5||month==7||month==8||month==10||month==12){ //if big month
@@ -763,7 +779,7 @@ void search_if_have_activity_on_the_date(Event_date *date_head, int month, int d
 /**************************************priority queue************************************/
 struct priority_queue{
     int time;
-    struct node *event;              //put ptr,which stores all info including month, date...
+    Event_content *event;              //put ptr,which stores all info including month, date...
 };
 
 int tree_size=0;                      //global variable trace size of tree
@@ -777,9 +793,9 @@ void swap(struct priority_queue *a,struct priority_queue *b) {  //swap info in d
 
 char *pop(struct  priority_queue *day_tree){   //pop out the smallest time's event name
     Event_content *pop_activity=NULL;                   //store the ptr being popping out
-    pop_activity=malloc(sizeof(struct node));
+    pop_activity=malloc(sizeof(Event_content));
     if (tree_size<=0) {                               //if tree_size<=0, no more event
-        Event_content *no_activity=malloc(sizeof(struct node));
+        Event_content *no_activity=malloc(sizeof(Event_content));
         no_activity->name=malloc(30);
         no_activity->name="No more activity today.";   //make the string printing out the msg
         pop_activity=no_activity;
@@ -809,7 +825,7 @@ char *pop(struct  priority_queue *day_tree){   //pop out the smallest time's eve
     return pop_activity->name;           //return day_tree[0].event
 }
 
-void push(struct priority_queue *day_tree, int strt_time, struct node *list ){
+void push(struct priority_queue *day_tree, int strt_time, Event_content *list ){
     if (tree_size>=100) {                 //over the max size of day_tree
         printf("The schedule for today is full.\n");
         return;
