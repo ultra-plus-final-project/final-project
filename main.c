@@ -202,7 +202,7 @@ Event_date *event_date_insert(int start_month, int start_date, int command){
 Event_date *find_current_date(int start_month, int start_date){
     Event_date *tmp = date_head;
     while(tmp != NULL){
-        if((tmp->month == start_month) && (tmp->month == start_date)) return tmp;
+        if((tmp->month == start_month) && (tmp->date == start_date)) return tmp;
         else tmp = tmp->next;
     }
     if(tmp == NULL) return NULL;
