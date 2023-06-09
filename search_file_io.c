@@ -134,24 +134,37 @@ void search_scheduled_time_through_activity(struct node *list,char *activity){
         printf("You don't have activity today\n");              // if not find an activity for the whole list
     }
 }
+/******************************new add***********************************/
+void search_if_have_activity_on_the_date(Event_date *date_head, int month, int date, int time){
+    while(date_head!=NULL){
+        if(date_head->start_month==month&&date_head->start_date==date){
+            break;
+        }
+        date_head=date_head->next;
+    }
+    if(date_head==NULL){
+        printf("You don't have activity at the time\n");
+    }else{
+        Event_content tmp;
+        tmp=date_head->content;
+        while(tmp!=NULL){
+            if(tmp->start_time==time){
+                printf("You have the activity %s at the time\n",tmp->name);
+                break;
+            }
+            tmp=tmp->next;
+        }
+        if(tmp==NULL){
+            printf("You don't have activity at the time\n");
+        }
+    }
+}
 
 struct node *annual_activity;
 
 void long_term_event(struct node *event_date_list, int month, int date, bool whole_day, bool alert, char *name, int start_time, int end_time, char *place, int remainder){
-    char selection;
     int normal_month_day[12]={31,28,31,30,31,30,31,31,30,31,30,31};
     int leap_month_day[12]={31,29,31,30,31,30,31,31,30,31,30,31};
-    if(isleap(my_schedule->year)){   //default of improper input of date
-        if(date>leap_month_day[month-1]){
-            printf("Invalid Input!!!\n");
-            return;
-        }
-    }else{
-        if(date>normal_month_day[month-1]){
-            printf("Invalid Input!!!\n");
-            return;
-        }
-    }
     static int this_year=(my_schedule->year+1);       //only declare this_year=year once
     if(this_year==my_schedule->year){  //if this year == year
             while(annual_activity!=NULL){  //put every event in the annual_activity list into the event list
@@ -163,30 +176,37 @@ void long_term_event(struct node *event_date_list, int month, int date, bool who
         }
     int deflaw=1;
     while(deflaw){
-        printf("This activity a weekly event (press w), a monthly event (press m), a annual event (press y), or none of them (press n)\n");           //ask whether and which long term type
-        scanf("%c",&selection);                                 //select type
+       selection=ask_event_length(struct node *event_date_list, int month, int date);
         switch(selection){
             case 'w':                                           // if is week, insert activity after every seven days
                    if(month==1||month==3||month==5||month==7||month==8||month==10||month==12){ //if big month
                         for(int i=event_date_list->strt_day;i<31;i+=7){
-                            event_date_insert(event_date_list, month, i/*date*/); //******************************
-                            event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                            if(check_if_already_have_event_w(date_head,month,i)){
+                                event_date_insert(event_date_list, month, i/*date*/); //******************************
+                                event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                            }
                         }
                    }else if(month==4||month==6||month==9||month==11){ //if small month
                         for(int i=event_date_list->strt_day;i<30;i+=7){
-                            event_date_insert(event_date_list, month, i/*date*/); //******************************
-                            event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                           if(check_if_already_have_event_w(date_head,month,i)){
+                                event_date_insert(event_date_list, month, i/*date*/); //******************************
+                                event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                            }
                         }
                    }else if(event_date_list->strt_month==2){    //if feb
                         if(my_schedule->year%4==0){              //leap year
                             for(int i=event_date_list->strt_day;i<29;i+=7){
-                                event_date_insert(event_date_list, month, i/*date*/); //******************************
-                                event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                                if(check_if_already_have_event_w(date_head,month,i)){
+                                    event_date_insert(event_date_list, month, i/*date*/); //******************************
+                                    event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                            }
                             }
                         }else{                                  //normal year
                             for(int i=event_date_list->strt_day;i<30;i+=7){
-                                event_date_insert(event_date_list, month, i/*date*/); //******************************
-                                event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                                if(check_if_already_have_event_w(date_head,month,i)){
+                                    event_date_insert(event_date_list, month, i/*date*/); //******************************
+                                    event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                            }
                             }
                         }
                    }
@@ -195,33 +215,85 @@ void long_term_event(struct node *event_date_list, int month, int date, bool who
             case 'm':                                           //if is a monthy activity
                     for(int i=my_schedule->month;i<12;i++){  
                         if(isleap(i)){
-                            if(date<=leap_month_day[i-1])
-                            event_date_insert(event_date_list, i/*month*/, date); //******************************//every month same date
-                            event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                            if(date<=leap_month_day[i-1]){
+                                if(check_if_already_have_event(date_head,i,date)){
+                                    event_date_insert(event_date_list, i/*month*/, date); //******************************//every month same date
+                                    event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                                }
+                            }
                         }else{
                             if(date<=normal_month_day[i-1]){
-                                event_date_insert(event_date_list, i/*month*/, date); //******************************//every month same date
-                                event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                                if(check_if_already_have_event(date_head,i,date)){
+                                    event_date_insert(event_date_list, i/*month*/, date); //******************************//every month same date
+                                    event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                                }
                             }
                         }  
                     }
                     deflaw=0;
                     break;   
            case 'y':                                          //if is an annual event                  
-                    annual_activity=add_to_list(annual_activity,month,date,whole_day,alert,start_time,end_time,name,place,remainder); //add the event into annual_activity list
-                    event_date_insert(event_date_list, month, date); //******************************
-                    event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                    if(check_if_already_have_event(date_head,month,date)){
+                        annual_activity=add_to_list(annual_activity,month,date,whole_day,alert,start_time,end_time,name,place,remainder); //add the event into annual_activity list
+                        event_date_insert(event_date_list, month, date); //******************************
+                        event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                    }
+                    deflaw=0;
+                    break;
             case 'n':                                            //if not long term activity, just insert
-                    event_date_insert(event_date_list, month, date); //******************************//that month that date
-                    event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                    if(check_if_already_have_event(date_head,month,date)){
+                        event_date_insert(event_date_list, month, date); //******************************
+                        event_content_insert(event_date_list->event_content,name,start_time,end_time,remainder);
+                    }
                     deflaw=0;
                     break;
             default:
-                    printf("Invalid input!!\n"); //if(variable default isn't set to zero, the function will ask again in the while loop)
+                    printf("Invalid input in term selection.\n"); //if(variable default isn't set to zero, the function will ask again in the while loop)
                     break;
         }
     }
 }
+
+char ask_event_length(struct node *event_date_list, int month, int date){
+    char selection;
+     printf("This activity a weekly event (press w), a monthly event (press m), a annual event (press y), or none of them (press n)\n");           //ask whether and which long term type
+        scanf("%c",&selection); 
+    if(isleap(my_schedule->year)){   //default of improper input of date***********可被放到前面程式重新輸入**************
+        if(date>leap_month_day[month-1]){
+            printf("Invalid Input in date.\n");
+            return;
+        }
+    }else{
+        if(date>normal_month_day[month-1]){
+            printf("Invalid Input in date.\n");
+            return;
+        }
+    }
+    return selection;                                //select type
+}
+
+int check_if_already_have_event(Event_date *date_head,int month,int date){    //check if there is already event ont the day
+    while(date_head!=NULL){
+        if(date_head->start_month==month&&date_head->start_date==date){
+            break;
+        }
+        date_head=date_head->next;
+    }
+    if(date_head!=NULL){
+        Event_content tmp;
+        tmp=date_head->content;
+        while(tmp!=NULL){
+            if(tmp->start_time==time){
+                printf("You already have the activity %s at the time\n",tmp->name);
+                return 0;
+                break;
+            }
+            tmp=tmp->next;
+        }
+    }
+    return 1;
+}
+/********************************new add*********************************/
 
 /**************************************priority queue************************************/
 struct priority_queue{
