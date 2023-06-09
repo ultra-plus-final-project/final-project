@@ -55,6 +55,8 @@ void game_1a2b(int *points_of_master);
 
 int check_if_already_have_event(Event_date *date_head,int month,int date);
 
+void print_week(int year,int month,int date);
+
 int main() {
     char user_name[50];
     int points_of_master = 0;
@@ -906,3 +908,53 @@ Event_content *add_to_ptrlist(Event_content *list,int str_t,int end_t,char* ac,c
     return tmp;
 }
 /**************************************priority queue************************************/
+
+
+void print_week(int year,int month,int date){
+    int day[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    system("CLS");
+    Event_date *cur = find_current_date(month,date);
+    printf("         %4d         %2d         \n",year,month);
+    printf("  SUN  MON  TUE  WED  TUE  FRI  SAT \n");
+    printf("+----+----+----+----+----+----+----+\n");
+    int d = find_weekday(year,month,date);
+    printf("|");
+    for(int i = date - d ; i < date - d + 7  ; ++i){
+        if(i <= 0){
+            printf(" %2d |", i + day[month-2]);
+        }else if(i > day[month-1]){
+            printf(" %2d |",i - day[month-1]);
+        }else{
+            printf(" %2d |",i);
+        }
+    }
+    printf("\n|");
+    for(int i = date - d ; i < date - d + 7  ; ++i){
+        if(i < date){
+            printf("    |");
+            continue;
+        }else{
+            switch (cur -> event_num){
+            case 0:
+                printf("    |");
+                break;
+            case 1:
+                printf(".   |");
+                break;
+            case 2:
+                printf("..  |");
+                break;
+            case 3:
+                printf("... |");
+                break;
+            default:
+                printf("....|");
+                break;
+            }
+        }
+        cur = cur -> next;
+    }
+    printf("\n");
+    printf("+----+----+----+----+----+----+----+\n");
+    return;
+}
