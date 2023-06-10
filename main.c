@@ -61,6 +61,10 @@ int search_if_the_time_have_activity(struct event_content *list,int start_time, 
 
 void print_calendar(int year,int month,int date);
 
+void print_week(int year,int month,int date);
+
+void print_date(int year,int month,int date);
+
 void long_term_event(char selection, int month, int date, int start_time, int end_time,  char *name, char *place, char* others);
 
 void game_1a2b(int *points_of_master);
@@ -452,34 +456,199 @@ int to_new_month(int date){
 }
 
 void print_calendar(int year,int month,int date){
-    //system("CLS");
-    int day[12]={31,28,31,30,31,30,31,31,30,31,30,31};
-    int d=find_weekday(year,month,date);
+    int day[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    int leap[12] = {31,29,31,30,31,30,31,31,30,31,30,31};
+    system("CLS");
+    Event_date *cur = find_current_date(month,date);
+    printf("         %4d         %2d         \n",year,month);
     printf("  SUN  MON  TUE  WED  TUE  FRI  SAT \n");
     printf("+----+----+----+----+----+----+----+\n");
+    int d = find_weekday(year,month,1);
     printf("|");
-    for(int i=0;i<d;++i){
-        printf("    |");
-    }
-    for(int i=1;i<=day[month-1];++i){
-        d=find_weekday(year,month,i);
-        printf(" %2d |",i);
-        if(d==6){
+    int cur_date = 1;
+    int cur_day = d;
+    if(month ==2 && isleap(year)){
+        while((cur_date - cur_day) <= leap[month-1] && cur_day <= 6){
+            for(int i = cur_date - cur_day ; i < cur_date - cur_day + 7  ; ++i){
+                if(i <= 0){
+                    printf("    |");
+                }else if(i > leap[month-1]){
+                    printf("    |");
+                }else{
+                    printf(" %2d |",i);
+                }
+            }
+            printf("\n|");
+            for(int i = cur_date - cur_day ; i < cur_date - cur_day + 7  ; ++i){
+                if(i <= 0){
+                    printf("    |");
+                    continue;
+                }else{
+                    if(cur == NULL){
+                        printf("    |");
+                        continue;
+                    }
+                    if(i > leap[month-1]){
+                        printf("    |");
+                        continue;
+                    }
+                    switch (cur -> event_num){
+                    case 0:
+                        printf("    |");
+                        break;
+                    case 1:
+                        printf(".   |");
+                        break;
+                    case 2:
+                        printf("..  |");
+                        break;
+                    case 3:
+                        printf("... |");
+                        break;
+                    default:
+                        printf("....|");
+                        break;
+                    }
+                }
+                cur = cur -> next;
+            }
             printf("\n");
-            printf("|....|....|....|....|....|....|....|\n");
             printf("+----+----+----+----+----+----+----+\n");
-            printf("|");
+            if((cur_date - cur_day + 7) <= leap[month-1]){
+                printf("|");
+            }
+            cur_date = cur_date + 7;
+        }
+    }else{
+        while((cur_date - cur_day) <= day[month-1] && cur_day <= 6){
+            for(int i = cur_date - cur_day ; i < cur_date - cur_day + 7  ; ++i){
+                if(i <= 0){
+                    printf("    |");
+                }else if(i > day[month-1]){
+                    printf("    |");
+                }else{
+                    printf(" %2d |",i);
+                }
+            }
+            printf("\n|");
+            for(int i = cur_date - cur_day ; i < cur_date - cur_day + 7  ; ++i){
+                if(i <= 0){
+                    printf("    |");
+                    continue;
+                }else{
+                    if(cur == NULL){
+                        printf("    |");
+                        continue;
+                    }
+                    if(i > day[month-1]){
+                        printf("    |");
+                        continue;
+                    }
+                    switch (cur -> event_num){
+                    case 0:
+                        printf("    |");
+                        break;
+                    case 1:
+                        printf(".   |");
+                        break;
+                    case 2:
+                        printf("..  |");
+                        break;
+                    case 3:
+                        printf("... |");
+                        break;
+                    default:
+                        printf("....|");
+                        break;
+                    }
+                }
+                cur = cur -> next;
+            }
+            printf("\n");
+            printf("+----+----+----+----+----+----+----+\n");
+            if((cur_date - cur_day + 7) <= day[month-1]){
+                printf("|");
+            }
+            cur_date = cur_date + 7;
         }
     }
-    if(month == 2 && isleap(year) == 1){
-        printf(" %2d  \n", 29);//what is "%d" here
-    }else if(d == 6){
-        printf("\n");
-    }else{
-        printf("\n");
-        printf("|....|....|....|....|....|....|....|\n");
-        printf("+----+----+----+----+----+----+----+\n");
+    return;
+}
+
+void print_week(int year,int month,int date){
+    int day[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    system("CLS");
+    Event_date *cur = find_current_date(month,date);
+    printf("         %4d         %2d         \n",year,month);
+    printf("  SUN  MON  TUE  WED  TUE  FRI  SAT \n");
+    printf("+----+----+----+----+----+----+----+\n");
+    int d = find_weekday(year,month,date);
+    printf("|");
+    for(int i = date - d ; i < date - d + 7  ; ++i){
+        if(i <= 0){
+            printf(" %2d |", i + day[month-2]);
+        }else if(i > day[month-1]){
+            printf(" %2d |",i - day[month-1]);
+        }else{
+            printf(" %2d |",i);
+        }
     }
+    printf("\n|");
+    for(int i = date - d ; i < date - d + 7  ; ++i){
+        if(i < date){
+            printf("    |");
+            continue;
+        }else{
+            switch (cur -> event_num){
+            case 0:
+                printf("    |");
+                break;
+            case 1:
+                printf(".   |");
+                break;
+            case 2:
+                printf("..  |");
+                break;
+            case 3:
+                printf("... |");
+                break;
+            default:
+                printf("....|");
+                break;
+            }
+        }
+        cur = cur -> next;
+    }
+    printf("\n");
+    printf("+----+----+----+----+----+----+----+\n");
+    return;
+}
+
+void print_date(int year,int month,int date){
+    Event_date *cur = find_current_date(month,date);
+    //system("cls");  //我不知道為什麼把這行註解就可以過了
+    printf("   %4d   %2d   %2d   \n",year,month,date);
+    Event_content *cur_event = cur->content;
+    int A[24]={0};
+    while(cur_event != NULL){
+        for(int i = cur_event->start_time ; i <= cur_event->end_time ; ++i){
+            A[i]=1;
+        }
+        cur_event = cur_event->next;
+    }
+    cur_event = cur->content;
+    for(int i = 0;i <= 23; ++i){
+        printf("%2d------------------\n",i);
+        if(A[i]==0){
+            printf("                    \n");
+        }else{
+            printf(".%-18s*\n",cur_event->name);
+            if(i == cur_event->end_time){
+                cur_event = cur_event->next;
+            }
+        }
+    }
+    printf("24------------------\n");
     return;
 }
 
