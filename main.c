@@ -76,7 +76,7 @@ int main() {
     int points_of_master = 0;
     int action;
     int working_hour;
-    {//initialize
+    //initialize
     printf("Hello master, what should I call you.: ");
     scanf("%s", user_name);
 
@@ -86,7 +86,7 @@ int main() {
     this_year=year+1;
     print_calendar(year,month,date);
     today = 10000 * year + 100 * month + date;
-    }
+
     while(1){
         printf("Hello, %s ,What kind of action do you want to do\n", user_name);
         printf(" [1] enter a new event [2] search for an event [3] print out the schedule [4] terminate this day [5] terminate this month.: ");
@@ -994,7 +994,7 @@ char ask_event_length(){
     char selection;
     while(1){
         printf("This activity a daily event (press d), weekly event (press w), a monthly event (press m), a annual event (press y), or none of them (press n)\n");           //ask whether and which long term type
-        scanf("%c",&selection); 
+        scanf(" %c",&selection); 
         if(selection!='d'&&selection!='w'&&selection!='m'&&selection!='y'&&selection!='n'){
             printf("Invalid Input in selection!!!\n");
         }else{
