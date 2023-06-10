@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #define A_DAY_HOUR 24
-int today;
+int today,this_year;
 enum activity_type{WORK, CELEBRATION, LEISURE};
 
 int return_today(){
@@ -33,6 +33,10 @@ Event_date *event_date_insert(int month, int date, int command);
 
 void event_content_insert(int month, int date, char *name, int start_time, int end_time, char* place, char* others);
 
+Event_date *delete_date(int month, int date);
+
+Event_content *delete_content(Event_date *cur_date, char *name);
+
 void daily_event(int start_month,int end_month,int start_date,int end_date,char* name,int start_time,int end_time,char* place,char* others);
 
 void print_event_date_list(Event_date *list);
@@ -43,7 +47,7 @@ void remove_enter(char *sentence);
 
 char ask_event_length();
 
-int check_if_already_have_event(Event_date *date_head,int month,int date,int time)
+int check_if_already_have_event(Event_date *date_head,int month,int date,int time);
 
 int isleap(int year);
 
@@ -56,6 +60,10 @@ int to_new_month(int date);
 int search_if_the_time_have_activity(struct event_content *list,int start_time, int end_time, int command);
 
 void print_calendar(int year,int month,int date);
+
+void print_week(int year,int month,int date);
+
+void print_date(int year,int month,int date);
 
 void long_term_event(char selection, int month, int date, int start_time, int end_time,  char *name, char *place, char* others);
 
@@ -73,8 +81,9 @@ int main() {
     scanf("%s", user_name);
 
     int year,month,date;
-    printf("Hello %s, please enter when do you want to start your calender(e.g. 2025 05 16): ");
+    printf("Hello %s, please enter when do you want to start your calender(e.g. 2025 05 16): ", user_name);
     scanf("%d %d %d",&year,&month,&date);
+    this_year=year+1;
     print_calendar(year,month,date);
     today = 10000 * year + 100 * month + date;
     printf("Next, %s ,What kind of action do you want to do\n", user_name);
@@ -83,7 +92,7 @@ int main() {
     }
 
     if(action == 1){
-        printf("Yeah, %s, let's start for buliding an event.\n");
+        printf("Yeah, %s, let's start for buliding an event.\n", user_name);
         char name[30],place[30],others[30],selection;
         int start_month, end_month, start_date, end_date;
         printf("Please enter your event's name(limited in 28 words): ");
@@ -249,7 +258,7 @@ Event_date *event_date_insert(int start_month, int start_date, int command){
 Event_date *find_current_date(int start_month, int start_date){
     Event_date *tmp = date_head;
     while(tmp != NULL){
-        if((tmp->month == start_month) && (tmp->month == start_date)) return tmp;
+        if((tmp->month == start_month) && (tmp->date == start_date)) return tmp;
         else tmp = tmp->next;
     }
     if(tmp == NULL) return NULL;
@@ -261,18 +270,19 @@ void event_content_insert(int month, int date, char *name, int start_time, int e
     In this function, we have few steps to do
     1. find if the day has any activity before, if not, then add a nw node of event_date
     2. check if the time is free
-        (1) if not, then print out the oriinal schedule and end the action
+        (1) if not, then print out the orignal schedule and end the action
         (2) if is, then insert the schedule
     */
-    Event_date *cur_date = find_current_date(start_month, start_date);
+    Event_date *cur_date = find_current_date(month, date);
     
     if(cur_date == NULL)
-        cur_date = event_date_insert(start_month, start_date, 1);
+        cur_date = event_date_insert(month, date, 1);
     else if(search_if_the_time_have_activity(cur_date->content, start_time, end_time, 1)) return;
     
     Event_content *new_event_content = malloc(sizeof(struct event_content));
     Event_content *content_head = cur_date->content;
-    Event_content *prev = content_head;
+    Event_content *curr = content_head;
+    Event_content *prev = NULL;
 
     if(new_event_content == NULL){
         printf("Error: malloc failed in event_content_insert\n");
@@ -286,8 +296,6 @@ void event_content_insert(int month, int date, char *name, int start_time, int e
     new_event_content -> others = others;
     new_event_content -> next = NULL;
 
- //***********************************待檢查
-    /* 
     if(content_head == NULL){ //If linked List is empty
         cur_date->content = new_event_content;
     }
@@ -303,9 +311,60 @@ void event_content_insert(int month, int date, char *name, int start_time, int e
         }       
         prev = curr;
         curr = curr->next;
-    } */
+    }
 }   
 
+Event_date *delete_date(int month, int date){ //month and date stand for target dates
+    Event_date *tmp;
+    tmp->month = month;
+    tmp->date = date;
+
+    Event_date *date_curr = date_head;
+    Event_date *date_prev = NULL;
+
+    while(date_curr != NULL){
+        if(date_prev == NULL && date_curr->month < month){
+            date_head = date_curr->next;
+        }
+
+        if(date_curr->month < month){
+            date_prev->next = date_curr->next;
+        }
+            
+        else if(date_curr->month == month)
+            if(date_curr->date < date){
+                date_prev->next = date_curr->next;
+        }
+                
+        date_prev = date_curr;
+        date_curr = date_curr->next;
+    }
+    if(date_curr == NULL) return NULL;
+    else return tmp;
+}
+
+Event_content *delete_content(Event_date *cur_date, char *name){
+    Event_content *tmp;
+    tmp->name = name;
+
+    Event_content *content_head = cur_date->content;
+    Event_content *content_curr = content_head;
+    Event_content *content_prev = NULL;
+
+    while(content_curr != NULL){
+        if(content_prev == NULL && strcmp(content_curr->name, name) == 0){
+            cur_date->content = content_curr->next;
+        }
+        else if(strcmp(content_curr->name, name) == 0){
+            content_prev->next = content_curr->next;
+        }
+                
+        content_prev = content_curr;
+        content_curr = content_curr->next;
+    }
+    if(content_curr == NULL) return NULL;
+    else return tmp;
+}
 
 void print_event_date_list(Event_date *list){
   /* print start point for testing */
@@ -398,34 +457,199 @@ int to_new_month(int date){
 }
 
 void print_calendar(int year,int month,int date){
-    //system("CLS");
-    int day[12]={31,28,31,30,31,30,31,31,30,31,30,31};
-    int d=find_weekday(year,month,date);
+    int day[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    int leap[12] = {31,29,31,30,31,30,31,31,30,31,30,31};
+    system("CLS");
+    Event_date *cur = find_current_date(month,date);
+    printf("         %4d         %2d         \n",year,month);
     printf("  SUN  MON  TUE  WED  TUE  FRI  SAT \n");
     printf("+----+----+----+----+----+----+----+\n");
+    int d = find_weekday(year,month,1);
     printf("|");
-    for(int i=0;i<d;++i){
-        printf("    |");
-    }
-    for(int i=1;i<=day[month-1];++i){
-        d=find_weekday(year,month,i);
-        printf(" %2d |",i);
-        if(d==6){
+    int cur_date = 1;
+    int cur_day = d;
+    if(month ==2 && isleap(year)){
+        while((cur_date - cur_day) <= leap[month-1] && cur_day <= 6){
+            for(int i = cur_date - cur_day ; i < cur_date - cur_day + 7  ; ++i){
+                if(i <= 0){
+                    printf("    |");
+                }else if(i > leap[month-1]){
+                    printf("    |");
+                }else{
+                    printf(" %2d |",i);
+                }
+            }
+            printf("\n|");
+            for(int i = cur_date - cur_day ; i < cur_date - cur_day + 7  ; ++i){
+                if(i <= 0){
+                    printf("    |");
+                    continue;
+                }else{
+                    if(cur == NULL){
+                        printf("    |");
+                        continue;
+                    }
+                    if(i > leap[month-1]){
+                        printf("    |");
+                        continue;
+                    }
+                    switch (cur -> event_num){
+                    case 0:
+                        printf("    |");
+                        break;
+                    case 1:
+                        printf(".   |");
+                        break;
+                    case 2:
+                        printf("..  |");
+                        break;
+                    case 3:
+                        printf("... |");
+                        break;
+                    default:
+                        printf("....|");
+                        break;
+                    }
+                }
+                cur = cur -> next;
+            }
             printf("\n");
-            printf("|....|....|....|....|....|....|....|\n");
             printf("+----+----+----+----+----+----+----+\n");
-            printf("|");
+            if((cur_date - cur_day + 7) <= leap[month-1]){
+                printf("|");
+            }
+            cur_date = cur_date + 7;
+        }
+    }else{
+        while((cur_date - cur_day) <= day[month-1] && cur_day <= 6){
+            for(int i = cur_date - cur_day ; i < cur_date - cur_day + 7  ; ++i){
+                if(i <= 0){
+                    printf("    |");
+                }else if(i > day[month-1]){
+                    printf("    |");
+                }else{
+                    printf(" %2d |",i);
+                }
+            }
+            printf("\n|");
+            for(int i = cur_date - cur_day ; i < cur_date - cur_day + 7  ; ++i){
+                if(i <= 0){
+                    printf("    |");
+                    continue;
+                }else{
+                    if(cur == NULL){
+                        printf("    |");
+                        continue;
+                    }
+                    if(i > day[month-1]){
+                        printf("    |");
+                        continue;
+                    }
+                    switch (cur -> event_num){
+                    case 0:
+                        printf("    |");
+                        break;
+                    case 1:
+                        printf(".   |");
+                        break;
+                    case 2:
+                        printf("..  |");
+                        break;
+                    case 3:
+                        printf("... |");
+                        break;
+                    default:
+                        printf("....|");
+                        break;
+                    }
+                }
+                cur = cur -> next;
+            }
+            printf("\n");
+            printf("+----+----+----+----+----+----+----+\n");
+            if((cur_date - cur_day + 7) <= day[month-1]){
+                printf("|");
+            }
+            cur_date = cur_date + 7;
         }
     }
-    if(month == 2 && isleap(year) == 1){
-        printf(" %2d  \n");//what is "%d" here
-    }else if(d == 6){
-        printf("\n");
-    }else{
-        printf("\n");
-        printf("|....|....|....|....|....|....|....|\n");
-        printf("+----+----+----+----+----+----+----+\n");
+    return;
+}
+
+void print_week(int year,int month,int date){
+    int day[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    system("CLS");
+    Event_date *cur = find_current_date(month,date);
+    printf("         %4d         %2d         \n",year,month);
+    printf("  SUN  MON  TUE  WED  TUE  FRI  SAT \n");
+    printf("+----+----+----+----+----+----+----+\n");
+    int d = find_weekday(year,month,date);
+    printf("|");
+    for(int i = date - d ; i < date - d + 7  ; ++i){
+        if(i <= 0){
+            printf(" %2d |", i + day[month-2]);
+        }else if(i > day[month-1]){
+            printf(" %2d |",i - day[month-1]);
+        }else{
+            printf(" %2d |",i);
+        }
     }
+    printf("\n|");
+    for(int i = date - d ; i < date - d + 7  ; ++i){
+        if(i < date){
+            printf("    |");
+            continue;
+        }else{
+            switch (cur -> event_num){
+            case 0:
+                printf("    |");
+                break;
+            case 1:
+                printf(".   |");
+                break;
+            case 2:
+                printf("..  |");
+                break;
+            case 3:
+                printf("... |");
+                break;
+            default:
+                printf("....|");
+                break;
+            }
+        }
+        cur = cur -> next;
+    }
+    printf("\n");
+    printf("+----+----+----+----+----+----+----+\n");
+    return;
+}
+
+void print_date(int year,int month,int date){
+    Event_date *cur = find_current_date(month,date);
+    //system("cls");  //我不知道為什麼把這行註解就可以過了
+    printf("   %4d   %2d   %2d   \n",year,month,date);
+    Event_content *cur_event = cur->content;
+    int A[24]={0};
+    while(cur_event != NULL){
+        for(int i = cur_event->start_time ; i <= cur_event->end_time ; ++i){
+            A[i]=1;
+        }
+        cur_event = cur_event->next;
+    }
+    cur_event = cur->content;
+    for(int i = 0;i <= 23; ++i){
+        printf("%2d------------------\n",i);
+        if(A[i]==0){
+            printf("                    \n");
+        }else{
+            printf(".%-18s*\n",cur_event->name);
+            if(i == cur_event->end_time){
+                cur_event = cur_event->next;
+            }
+        }
+    }
+    printf("24------------------\n");
     return;
 }
 
@@ -667,8 +891,6 @@ Event_date *annual_activity;
 void long_term_event(char selection, int month, int date, int start_time, int end_time,  char *name, char *place, char* others){
     int normal_month_day[12]={31,28,31,30,31,30,31,31,30,31,30,31};
     int leap_month_day[12]={31,29,31,30,31,30,31,31,30,31,30,31};
-    int year=((today/10000)+1);
-    static int this_year=year;       //only declare this_year=year once
     if(this_year==(today/10000)){  //if this year == year
             while(annual_activity!=NULL){  //put every event in the annual_activity list into the event list
                 event_date_insert(annual_activity->month,annual_activity->date,0);
@@ -760,16 +982,17 @@ char ask_event_length(){
     return selection;                                //select type
 }
 
-int check_if_already_have_event(Event_date *date_head,int month,int date,time){    //check if there is already event ont the day
-    while(date_head!=NULL){
-        if(date_head->month==month&&date_head->date==date){
+int check_if_already_have_event(Event_date *date_head, int month, int date, int time){    //check if there is already event ont the day
+    Event_date *cur_date = date_head;
+    while(cur_date!=NULL){
+        if(cur_date->month==month&&cur_date->date==date){
             break;
         }
-        date_head=date_head->next;
+        cur_date=cur_date->next;
     }
-    if(date_head!=NULL){
+    if(cur_date!=NULL){
         Event_content *tmp;
-        tmp=date_head->content;
+        tmp=cur_date->content;
         while(tmp!=NULL){
             if(tmp->start_time==time){
                 printf("You already have the activity %s at the time\n",tmp->name);
@@ -810,8 +1033,8 @@ void search_if_have_activity_on_the_date(Event_date *date_head, int month, int d
 void daily_event(int start_month,int end_month,int start_date,int end_date,char* name,int start_time,int end_time,char* place,char* others){
     int normal_month_day[12]={31,28,31,30,31,30,31,31,30,31,30,31};
     int leap_month_day[12]={31,29,31,30,31,30,31,31,30,31,30,31};
-    if(isleap(today/10000)){
-        while(start_date>leap_month_day[start_month-1]||start_date<1){
+    if(isleap(today/10000)){                                            //if is leap year
+        while(start_date>leap_month_day[start_month-1]||start_date<1){  //if input date has wrong
             printf("Invalid Input in start date!!!\n");
             printf("Please enter the start date again.\n");
             scanf("%d",&start_date);
@@ -821,9 +1044,9 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
             printf("Please enter the end date again.\n");
             scanf("%d",&end_date);
         }
-    }else{
-        while(start_date>normal_month_day[start_month-1]||start_date<1){
-            printf("Invalid Input in start date!!!\n");
+    }else{                                                              //if is normal year
+        while(start_date>normal_month_day[start_month-1]||start_date<1){ //if input date has wrong
+            printf("Invalid Input in start date!!!\n"); 
             printf("Please enter the start date again.\n");
             scanf("%d",&start_date);
         }
@@ -834,18 +1057,18 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
         }
 
     }
-    if(start_month!=end_month){
+    if(start_month!=end_month){                               //if it is a long term daily across months
         for(int i=start_month;i<=end_month;i++){
-            if(isleap(today/10000)){
+            if(isleap(today/10000)){                       //if is leap year
                 for(int j=(i==start_month? start_date: 1);j<=(i==end_month? end_date : leap_month_day[i-1]);j++){
-                    if(check_if_already_have_event_w(date_head,i/*month*/,j/*date*/)){
+                    if(check_if_already_have_event(date_head,i/*month*/,j/*date*/,start_time)){ //check if have planned
                         event_date_insert(i/*month*/,j/*date*/,0);
                         event_content_insert(i/*month*/,j/*date*/,name,start_time,end_time,place,others);
                     }
                 }
-            }else{
+            }else{                                         //if is normal year
                  for(int j=(i==start_month? start_date: 1);j<=(i==end_month? end_date : normal_month_day[i-1]);j++){
-                    if(check_if_already_have_event_w(date_head,i/*month*/,j/*date*/)){
+                    if(check_if_already_have_event(date_head,i/*month*/,j/*date*/,start_time)){
                         event_date_insert(i/*month*/,j/*date*/,0);
                         event_content_insert(i/*month*/,j/*date*/,name,start_time,end_time,place,others);
                     }
@@ -853,10 +1076,10 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
 
             }
         }
-    }else{
+    }else{                        //if is not across-month-daily-event
         for(int j=start_date;j<=end_date;j++){
-            if(check_if_already_have_event_w(date_head,start_month,j)){
-                event_date_insert(start_month,j/*date*/,0);
+            if(check_if_already_have_event(date_head,start_month,j,start_time)){
+                event_date_insert(start_month,j/*date*/,0);      //month stay same, only mend date
                 event_content_insert(start_month,j/*date*/,name,start_time,end_time,place,others);
             }
         }
