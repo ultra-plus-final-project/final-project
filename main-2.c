@@ -32,34 +32,33 @@ Event_date *date_head = NULL;
 
 
 Event_date *event_date_insert(int month, int date, int command);
-
 void event_content_insert(int month, int date, char *name, int start_time, int end_time, char* place, char* others);
 
 void print_event_date_list(Event_date *list);
-
 void print_event_content_list(Event_content *list);
+void print_calendar(int year,int month,int date);
+void print_week(int year,int month,int date);
 
 void remove_enter(char *sentence);
 
 char ask_event_length(int month, int date);
 
 int isleap(int year);
-
 int find_weekday(int year,int month,int date);
-
 int to_new_day(int curr_date);
-
 int to_new_month(int date);
 
-void print_calendar(int year,int month,int date);
+void long_term_event(char selection, int month, int date, int start_time, int end_time,  char *name, char *place, char* others);
 
 void game_1a2b(int *points_of_master);
 
 int check_if_already_have_event(Event_date *date_head,int month,int date);
 
-void print_week(int year,int month,int date);
+
 
 int main() {
+    int normal_month_day[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+    int leap_month_day[12]={31,29,31,30,31,30,31,31,30,31,30,31};
     char user_name[50];
     int points_of_master = 0;
     int action;
