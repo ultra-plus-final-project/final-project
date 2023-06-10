@@ -51,6 +51,10 @@ int check_if_already_have_event(Event_date *date_head,int month,int date,int tim
 
 int isleap(int year);
 
+int get_content_from_file(Event_date *ptr);
+
+int write_content_on_file(Event_date *ptr);
+
 int find_weekday(int year,int month,int date);
 
 int to_new_day(int curr_date);
@@ -68,6 +72,10 @@ void print_date(int year,int month,int date);
 void long_term_event(char selection, int month, int date, int start_time, int end_time,  char *name, char *place, char* others);
 
 void game_1a2b(int *points_of_master);
+
+/**************newly added*************/
+Event_content *find_day(Event_date *ptr,int month,int date);
+/**************newly added*************/
 
 int main() {
     int normal_month_day[12]={31,28,31,30,31,30,31,31,30,31,30,31};
@@ -651,7 +659,12 @@ void print_date(int year,int month,int date){
     Event_date *cur = find_current_date(month,date);
     //system("cls");  //我不知道為什麼把這行註解就可以過了
     printf("   %4d   %2d   %2d   \n",year,month,date);
-    Event_content *cur_event = cur->content;
+    /**************changes******************/
+    Event_date *tmp=malloc(sizeof(Event_date));
+    get_content_from_file(tmp);
+    Event_content *cur_event = find_day(tmp,month,date);
+    /**************changes******************/
+    //Event_content *cur_event = cur->content;
     int A[24]={0};
     while(cur_event != NULL){
         for(int i = cur_event->start_time ; i <= cur_event->end_time ; ++i){
@@ -988,6 +1001,7 @@ void long_term_event(char selection, int month, int date, int start_time, int en
                     }
                     break;
         }
+        write_content_on_file(date_head);
 }
 
 char ask_event_length(){
@@ -1107,6 +1121,23 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
         }
 
     }
+    write_content_on_file(date_head);
+}
+
+Event_content *find_day(Event_date *ptr,int month,int date){
+    Event_content *tmp_content;
+    while(ptr!=NULL){
+        if(ptr->month==month&&ptr->date==date){
+            break;
+        }
+        ptr=ptr->next;
+    }
+    if(date_head==NULL){
+        tmp_content=NULL;
+    }else{
+        tmp_content=ptr->content;
+    }
+    return tmp_content;
 }
 
 /**************************************priority queue************************************/
