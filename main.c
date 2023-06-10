@@ -897,11 +897,15 @@ int write_content_on_file(Event_date *ptr){                    //write content o
         printf("Error opening output file!\n");                 //if fail connecting
         return 1;
     }
-    while(ptr!=NULL){                                           //put info into file
-        fprintf(output_file,"%d. %d/%d %d-%d %s,%s,%s\n",ptr->event_num,\
-        ptr->month,ptr->date,ptr->content->start_time,ptr->content->end_time\
-        ,ptr->content->name,ptr->content->place,ptr->content->others);
-        ptr=ptr->next;
+    while(ptr!=NULL){   //put info into file
+        Event_content *tmp_content=ptr->content;   
+        for(int i=1;i<=ptr->event_num;i++){
+            fprintf(output_file,"%d. %d/%d %d-%d %s,%s,%s\n",i/*event num*/,\
+            ptr->month,ptr->date,tmp_content->start_time,tmp_content->end_time\
+            ,tmp_content->name,tmp_content->place,tmp_content->others);
+            tmp_content=tmp_content->next;
+        }            
+        ptr=ptr->next;                            
     }
     fclose(output_file);                                        //close the file
     return 1;
@@ -1125,19 +1129,22 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
 }
 
 Event_content *find_day(Event_date *ptr,int month,int date){
-    Event_content *tmp_content;
-    while(ptr!=NULL){
+    Event_content *cur=NULL;
+    while(ptr->next!=NULL){
         if(ptr->month==month&&ptr->date==date){
-            break;
+            Event_content *tmp_content=NULL;
+            tmp_content->name=ptr->content->name;
+            tmp_content->start_time=ptr->content->start_time;
+            tmp_content->end_time=ptr->content->end_time;
+            tmp_content->place=ptr->content->place;
+            tmp_content->others=ptr->content->others;
+            tmp_content->next=cur;
+            cur=tmp_content;
+            free(tmp_content);
         }
         ptr=ptr->next;
     }
-    if(date_head==NULL){
-        tmp_content=NULL;
-    }else{
-        tmp_content=ptr->content;
-    }
-    return tmp_content;
+    return cur;
 }
 
 /**************************************priority queue************************************/
