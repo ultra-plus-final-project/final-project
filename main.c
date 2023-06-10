@@ -33,6 +33,10 @@ Event_date *event_date_insert(int month, int date, int command);
 
 void event_content_insert(int month, int date, char *name, int start_time, int end_time, char* place, char* others);
 
+Event_date *delete_date(int month, int date);
+
+Event_content *delete_content(Event_date *content_head, int start_time, int end_time);
+
 void daily_event(int start_month,int end_month,int start_date,int end_date,char* name,int start_time,int end_time,char* place,char* others);
 
 void print_event_date_list(Event_date *list);
@@ -43,7 +47,7 @@ void remove_enter(char *sentence);
 
 char ask_event_length();
 
-int check_if_already_have_event(Event_date *date_head,int month,int date,int time)
+int check_if_already_have_event(Event_date *date_head,int month,int date,int time);
 
 int isleap(int year);
 
@@ -306,6 +310,57 @@ void event_content_insert(int month, int date, char *name, int start_time, int e
     } */
 }   
 
+Event_date *delete_date(int month, int date){ //month and date stand for target dates
+    Event_date *tmp;
+    tmp->month = month;
+    tmp->date = date;
+
+    Event_date *date_curr = date_head;
+    Event_date *date_prev = NULL;
+
+    while(date_curr != NULL){
+        if(date_prev == NULL && date_curr->month < month){
+            date_head = date_curr->next;
+        }
+
+        if(date_curr->month < month){
+            date_prev->next = date_curr->next;
+        }
+            
+        else if(date_curr->month == month)
+            if(date_curr->date < date){
+                date_prev->next = date_curr->next;
+        }
+                
+        date_prev = date_curr;
+        date_curr = date_curr->next;
+    }
+    if(date_curr == NULL) return NULL;
+    else return tmp;
+}
+
+Event_content *delete_content(Event_date *content_head, int start_time, int end_time){ //month and date stand for target dates
+    Event_content temporary_storage = {.start_time = start_time, .end_time = end_time};
+    Event_content *tmp = &temporary_storage;
+
+    Event_content *content_curr = content_head;
+    Event_content *content_prev = NULL;
+
+    while(content_curr != NULL){
+        if(content_prev == NULL && content_curr->start_time < start_time){
+            date_head = content_curr->next;
+        }
+
+        if(content_curr->start_time < start_time){
+            content_prev->next = content_curr->next;
+        }
+                
+        content_prev = content_curr;
+        content_curr = content_curr->next;
+    }
+    if(content_curr == NULL) return NULL;
+    else return tmp;
+}
 
 void print_event_date_list(Event_date *list){
   /* print start point for testing */
