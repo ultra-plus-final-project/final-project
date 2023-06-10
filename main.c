@@ -171,7 +171,25 @@ int main() {
 
         }
         else if(action == 3){ //[3] print out the schedule 
-
+            int print_select;
+            printf("what do you want to print?\n");
+            printf("[1] whole month calendar\n");
+            printf("[2] whole week calendar\n");
+            printf("[3] whole day calendar\n");
+            scanf("%d",&print_select);
+            switch (print_select){
+            case 1:
+                print_calendar(year,month,date);
+                break;
+            case 2:
+                print_week(year,month,date);
+                break;
+            case 3:
+                print_date(year,month,date);
+                break;
+            default:
+                break;
+            }
         }
         else if(action == 4){ //[4] terminate this day 
             int ans1;
