@@ -118,20 +118,20 @@ int main(int argc, char *argv[]) {
                         drawTree(renderer, startX, startY, initialLength, initialAngle, depth);
                         //SDL_RenderCopy(renderer, yes_texture, NULL, &yesRect);
                         //SDL_RenderCopy(renderer, oops_texture, NULL, &oopsRect);
-                        int i = 8;
+                        int i = 9;
                         while(i--){    //動畫 if needed
                             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
                             SDL_RenderClear(renderer);
                             drawTree(renderer, startX, startY, initialLength, initialAngle, depth);
                             SDL_RenderPresent(renderer);
-                            SDL_Delay(200);
+                            SDL_Delay(100);
                             initialLength += lengthIncrement;
                         }
                         SDL_RenderPresent(renderer);
                         SDL_Delay(2000);
-                        SDL_RenderCopy(renderer, adayLater_texture, NULL, &adayLaterRect);
+                        /*SDL_RenderCopy(renderer, adayLater_texture, NULL, &adayLaterRect);
                         SDL_RenderPresent(renderer);
-                        SDL_Delay(1000);
+                        SDL_Delay(1000);*/
                         quit = 1;
                     }
                     else if(mouseX >= oopsRect.x && mouseX <= oopsRect.x + oopsRect.w && mouseY >= oopsRect.y && mouseY <= oopsRect.y + oopsRect.h){
@@ -153,11 +153,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-/*while(i--){    //動畫 if needed
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderClear(renderer);
-    drawTree(renderer, startX, startY, initialLength, initialAngle, depth);
-    SDL_RenderPresent(renderer);
-    SDL_Delay(200);
-    initialLength += lengthIncrement;
-}*/
