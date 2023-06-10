@@ -85,124 +85,128 @@ int main() {
     scanf("%d %d %d",&year,&month,&date);
     print_calendar(year,month,date);
     today = 10000 * year + 100 * month + date;
-    printf("Next, %s ,What kind of action do you want to do\n", user_name);
-    printf(" [1] enter a new event [2] search for an event [3] print out the schedule [4] terminate this day [5] terminate this month.: ");
-    scanf("%d", &action);
     }
+    while(1){
+        printf("Hello, %s ,What kind of action do you want to do\n", user_name);
+        printf(" [1] enter a new event [2] search for an event [3] print out the schedule [4] terminate this day [5] terminate this month.: ");
+        scanf("%d", &action);
+    
 
-    if(action == 1){
-        printf("Yeah, %s, let's start for buliding an event.\n", user_name);
-        char name[30],place[30],others[30],selection;
-        int start_month, end_month, start_date, end_date;
-        printf("Please enter your event's name(limited in 28 words): ");
-        scanf("%29s", name);
-        printf("Please enter the place the event takes place (limited in 28 words): ");
-        scanf("%29s", place);
-        printf("Please enter the things you want to memo for the event (limited in 28 words): ");
-        scanf("%29s", others);
-        int start_time, end_time;
-        bool is_whole_day;
-        char temp;
-        while(1){
-            printf("Is it a whole day function (Y or N): ");
-            scanf(" %c", &temp);
-            if(temp == 'Y'){
-                start_time = 0000;
-                end_time = 2400;
-                break;
-            }
-            else if(temp == 'N'){
-                printf("What is the start time of the event (using 24-hour clock, e.g.1500): ");
-                scanf("%d", &start_time);
-                printf("What is the end time of the event (using 24-hour clock, e.g.1500): ");
-                scanf("%d", &end_time);
-                break;
-            }
-            else printf("Error in setting event's lasting time\n");
-        }
-        selection=ask_event_length();
-        if(selection=='d'){
+        if(action == 1){
+            printf("Yeah, %s, let's start for buliding an event.\n", user_name);
+            char name[30],place[30],others[30],selection;
+            int start_month, end_month, start_date, end_date;
+            printf("Please enter your event's name(limited in 28 words): ");
+            scanf("%29s", name);
+            printf("Please enter the place the event takes place (limited in 28 words): ");
+            scanf("%29s", place);
+            printf("Please enter the things you want to memo for the event (limited in 28 words): ");
+            scanf("%29s", others);
+            int start_time, end_time;
+            bool is_whole_day;
+            char temp;
             while(1){
-            printf("Please enter the start month and date of your event (use spaces to seperate the two numbers, e.g.[10 31]): ");
-            scanf("%d %d", &start_month, &start_date);
-            printf("Please enter the end month and date of your event (use spaces to seperate the two numbers, e.g.[12 25]: ");
-            scanf("%d %d", &end_month, &end_date);
-            if(isleap(today/10000)){   
-                if((start_date>leap_month_day[start_month-1])||(end_date>leap_month_day[end_month-1])||(start_date<1)||(end_date<1)||(start_month<end_month)){
-                    printf("Invalid Input in date.\n");
-                }else{
+                printf("Is it a whole day function (Y or N): ");
+                scanf(" %c", &temp);
+                if(temp == 'Y'){
+                    start_time = 0000;
+                    end_time = 2400;
                     break;
                 }
-            }else{
-                if((start_date>normal_month_day[start_month-1])||(end_date>normal_month_day[end_month-1])||(start_date<1)||(end_date<1)||(start_month<end_month)){
-                    printf("Invalid Input in date.\n");
-                }else{
+                else if(temp == 'N'){
+                    printf("What is the start time of the event (using 24-hour clock, e.g.1500): ");
+                    scanf("%d", &start_time);
+                    printf("What is the end time of the event (using 24-hour clock, e.g.1500): ");
+                    scanf("%d", &end_time);
                     break;
                 }
+                else printf("Error in setting event's lasting time\n");
             }
-        }
-        printf("\n");
-        daily_event(start_month, end_month, start_date, end_date, name, start_time, end_time, place, others);
-        }else{
-            while(1){
+            selection=ask_event_length();
+            if(selection=='d'){
+                while(1){
                 printf("Please enter the start month and date of your event (use spaces to seperate the two numbers, e.g.[10 31]): ");
                 scanf("%d %d", &start_month, &start_date);
+                printf("Please enter the end month and date of your event (use spaces to seperate the two numbers, e.g.[12 25]: ");
+                scanf("%d %d", &end_month, &end_date);
                 if(isleap(today/10000)){   
-                    if((start_date>leap_month_day[start_month-1])||(start_date<1)){
+                    if((start_date>leap_month_day[start_month-1])||(end_date>leap_month_day[end_month-1])||(start_date<1)||(end_date<1)||(start_month<end_month)){
                         printf("Invalid Input in date.\n");
                     }else{
                         break;
                     }
                 }else{
-                    if((start_date>normal_month_day[start_month-1])||(start_date<1)){
+                    if((start_date>normal_month_day[start_month-1])||(end_date>normal_month_day[end_month-1])||(start_date<1)||(end_date<1)||(start_month<end_month)){
                         printf("Invalid Input in date.\n");
                     }else{
                         break;
                     }
                 }
             }
-            long_term_event(selection, start_month, start_date, start_time, end_time,  name, place,  others);
+            printf("\n");
+            daily_event(start_month, end_month, start_date, end_date, name, start_time, end_time, place, others);
+            }else{
+                while(1){
+                    printf("Please enter the start month and date of your event (use spaces to seperate the two numbers, e.g.[10 31]): ");
+                    scanf("%d %d", &start_month, &start_date);
+                    if(isleap(today/10000)){   
+                        if((start_date>leap_month_day[start_month-1])||(start_date<1)){
+                            printf("Invalid Input in date.\n");
+                        }else{
+                            break;
+                        }
+                    }else{
+                        if((start_date>normal_month_day[start_month-1])||(start_date<1)){
+                            printf("Invalid Input in date.\n");
+                        }else{
+                            break;
+                        }
+                    }
+                }
+                long_term_event(selection, start_month, start_date, start_time, end_time,  name, place,  others);
+            }
         }
-    }
-    else if(action == 2){ //[2] search for an event
+        else if(action == 2){ //[2] search for an event
+
+        }
+        else if(action == 3){ //[3] print out the schedule 
+
+        }
+        else if(action == 4){ //[4] terminate this day 
+            int ans1;
+            printf("How was your day? Congratulate on making it through!\n");
+            printf("Did you manage to complete all the tasks for today (Y or N): ");
+            scanf("%d", &ans1);
+            if(ans1 == 'Y'){
+                printf("Excellent! Congratulates on scoring 500 points.\n");
+                printf("Let's play a little game to relax.\n");
+                game_1a2b(&points_of_master);
+            }
+            else if(ans1 == 'N'){
+                printf("Don't worry, rest is essential to embark on a longer journey.\n");
+                printf("You still scored 300 points. Keep up the good work and continue to strive tomorrow.\n");
+            }
+            today = to_new_day(today);
+        }
+        else if(action == 5){ //[5] terminate this month.: 
+            int ans1;
+            printf("How was your month? Congratulations on making it through!\n");
+            printf("Did you manage to complete all the tasks for this month (Y or N): ");
+            scanf("%d", &ans1);
+            if(ans1 == 'Y'){
+                printf("Excellent! Congratulations on scoring 5000 points.\n");
+                printf("Let's play a little game to relax.\n");
+                game_1a2b(&points_of_master);
+            }
+            else if(ans1 == 'N'){
+                printf("Don't worry, rest is essential to embark on a longer journey.\n");
+                printf("You still scored 3000 points. Keep up the good work and continue to strive tomorrow.\n");
+            }
+            today = to_new_month(today);
+        }
 
     }
-    else if(action == 3){ //[3] print out the schedule 
-
-    }
-    else if(action == 4){ //[4] terminate this day 
-        int ans1;
-        printf("How was your day? Congratulate on making it through!\n");
-        printf("Did you manage to complete all the tasks for today (Y or N): ");
-        scanf("%d", &ans1);
-        if(ans1 == 'Y'){
-            printf("Excellent! Congratulates on scoring 500 points.\n");
-            printf("Let's play a little game to relax.\n");
-            game_1a2b(&points_of_master);
-        }
-        else if(ans1 == 'N'){
-            printf("Don't worry, rest is essential to embark on a longer journey.\n");
-            printf("You still scored 300 points. Keep up the good work and continue to strive tomorrow.\n");
-        }
-        today = to_new_day(today);
-    }
-    else if(action == 5){ //[5] terminate this month.: 
-        int ans1;
-        printf("How was your month? Congratulations on making it through!\n");
-        printf("Did you manage to complete all the tasks for this month (Y or N): ");
-        scanf("%d", &ans1);
-        if(ans1 == 'Y'){
-            printf("Excellent! Congratulations on scoring 5000 points.\n");
-            printf("Let's play a little game to relax.\n");
-            game_1a2b(&points_of_master);
-        }
-        else if(ans1 == 'N'){
-            printf("Don't worry, rest is essential to embark on a longer journey.\n");
-            printf("You still scored 3000 points. Keep up the good work and continue to strive tomorrow.\n");
-        }
-        today = to_new_month(today);
-    }
-
+    
 }
 
 
@@ -1066,14 +1070,14 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
         for(int i=start_month;i<=end_month;i++){
             if(isleap(today/10000)){
                 for(int j=(i==start_month? start_date: 1);j<=(i==end_month? end_date : leap_month_day[i-1]);j++){
-                    if(check_if_already_have_event(date_head,i/*month*/,j/*date*/, )){
+                    if(check_if_already_have_event(date_head,i/*month*/,j/*date*/,start_time)){
                         event_date_insert(i/*month*/,j/*date*/,0);
                         event_content_insert(i/*month*/,j/*date*/,name,start_time,end_time,place,others);
                     }
                 }
             }else{
                 for(int j=(i==start_month? start_date: 1);j<=(i==end_month? end_date : normal_month_day[i-1]);j++){
-                    if(check_if_already_have_event(date_head,i/*month*/,j/*date*/)){
+                    if(check_if_already_have_event(date_head,i/*month*/,j/*date*/,start_time)){
                         event_date_insert(i/*month*/,j/*date*/,0);
                         event_content_insert(i/*month*/,j/*date*/,name,start_time,end_time,place,others);
                     }
@@ -1083,7 +1087,7 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
         }
     }else{
         for(int j=start_date;j<=end_date;j++){
-            if(check_if_already_have_event(date_head,start_month,j)){
+            if(check_if_already_have_event(date_head,start_month,j,start_time)){
                 event_date_insert(start_month,j/*date*/,0);
                 event_content_insert(start_month,j/*date*/,name,start_time,end_time,place,others);
             }
