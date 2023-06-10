@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #define A_DAY_HOUR 24
-int today;
+int today,this_year;
 enum activity_type{WORK, CELEBRATION, LEISURE};
 
 int return_today(){
@@ -83,6 +83,7 @@ int main() {
     int year,month,date;
     printf("Hello %s, please enter when do you want to start your calender(e.g. 2025 05 16): ", user_name);
     scanf("%d %d %d",&year,&month,&date);
+    this_year=year+1;
     print_calendar(year,month,date);
     today = 10000 * year + 100 * month + date;
     }
@@ -894,9 +895,6 @@ Event_date *annual_activity;
 void long_term_event(char selection, int month, int date, int start_time, int end_time,  char *name, char *place, char* others){
     int normal_month_day[12]={31,28,31,30,31,30,31,31,30,31,30,31};
     int leap_month_day[12]={31,29,31,30,31,30,31,31,30,31,30,31};
-    /*
-    int year=((today/10000)+1);
-    static int this_year=year;       //only declare this_year=year once
     if(this_year==(today/10000)){  //if this year == year
             while(annual_activity!=NULL){  //put every event in the annual_activity list into the event list
                 event_date_insert(annual_activity->month,annual_activity->date,0);
@@ -905,7 +903,6 @@ void long_term_event(char selection, int month, int date, int start_time, int en
             }
             this_year++;  //this_year+1, so the events won't be add again till next year
         }
-    */
         switch(selection){
             case 'w':                                           // if is week, insert activity after every seven days
                    if(month==1||month==3||month==5||month==7||month==8||month==10||month==12){ //if big month
@@ -959,7 +956,6 @@ void long_term_event(char selection, int month, int date, int start_time, int en
                         }  
                     }
                     break;
-            /*
            case 'y':                                          //if is an annual event                  
                     if(check_if_already_have_event(date_head,month,date,start_time)){
                         annual_activity=add_to_list(annual_activity,month,date,start_time,end_time,name,place,others); //add the event into annual_activity list
@@ -967,7 +963,6 @@ void long_term_event(char selection, int month, int date, int start_time, int en
                         event_content_insert(month,date,name,start_time,end_time,place,others);
                     }
                     break;
-            */
             case 'n':                                            //if not long term activity, just insert
                     if(check_if_already_have_event(date_head,month,date,start_time)){
                         event_date_insert(month, date,0); //******************************
