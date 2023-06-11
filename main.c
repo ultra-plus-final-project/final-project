@@ -149,7 +149,7 @@ int main() {
             char temp[10];
             while(1){
                 printf("Is it a whole day function (Y or N): ");
-                scanf(" %c", &temp);
+                scanf(" %8s", temp);
                 if(strcmp(temp, "Y") == 0){
                     start_time = 0000;
                     end_time = 2400;
