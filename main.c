@@ -36,7 +36,7 @@ typedef struct event_content{
 
 Event_date *date_head = NULL;
 
-Event_content *find_today(Event_date *date_head,int month,int date)
+Event_content *find_today(Event_date *date_head,int month,int date);
 
 Event_date *event_date_insert(int month, int date, int command);
 
@@ -230,7 +230,6 @@ int main() {
                 printf("[2] search all the free time you have\n");
                 printf("[3] search scheduled time through entering activity\n");
                 scanf("%d",&event_search);
-            }
             if(event_search==1){
                 while(1){
                     printf("What day are you searching? (today[1], others[2]) :\n");
@@ -285,6 +284,7 @@ int main() {
                         break;
                     }
                 }
+                break;
             }else if(event_search==2){
                 while(1){
                     printf("What day are you searching? (today[1], others[2]) :\n");
@@ -321,6 +321,7 @@ int main() {
                         break;
                     }
                 }
+                break;
             }else if(event_search==3){
                 char activity_name[30];
                 while(1){
@@ -363,7 +364,8 @@ int main() {
                     }
                 }
             }
-
+             break;   
+            }
         }
         else if(action == 3){ //[3] print out the schedule 
             int print_select;
