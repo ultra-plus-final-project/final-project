@@ -22,3 +22,7 @@ initializes sdl2, defines/creates a window, renderer, yes_texture, oops_texture,
 
 ----------------------------------------------------------------------------------------------------</br>
 How to use this porgram?</br>
+
+First, Enter the data for year, month, and day. If the input is incorrect, prompt for re-entering.</br>
+
+Second, Enter the action to be performed. Action 1 is to add a new event, Action 2 is to search for a specific event, Action 3 is to delete a specified event, Action 4 is to print the calendar, Action 5 is to move to the next day, and Action 6 is to move to the next month.</br>
