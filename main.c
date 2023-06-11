@@ -120,6 +120,8 @@ int main() {
     int points_of_master = 0;
     int action;
     int working_hour;
+    int delete_month, delete_date;
+    char delete_name[NAME_SIZE];
     init_hash_table();
     //initialize
     printf("Hello master, what should I call you.: ");
@@ -158,7 +160,7 @@ int main() {
 
     while(1){
         printf("Hello, %s ,What kind of action do you want to do\n", user_name);
-        printf(" [1] enter a new event [2] search for an event [3] search for an event [4] print out the schedule [5] terminate this day [6] terminate this month.: ");
+        printf(" [1] enter a new event [2] search for an event [3] fast search for an event [4] print out the schedule [5] terminate this day [6] terminate this month [7] delete an event: ");
         scanf("%d", &action);
     
 
@@ -313,8 +315,8 @@ int main() {
                     scanf("%d",&today_or_not);
                     if(today_or_not==1){
                         int time;
-                        today_month = today %10000 / 100;
-                        today_date = today % 100;
+                        today_month=(((today>>2)<<6)/1000000);
+                        today_date=((today<<6)/1000000);
                         search_all_day_free_time(date_head,today_month,today_date);
                         break;
                     }else if(today_or_not==2){
@@ -442,7 +444,7 @@ int main() {
             }
             today = to_new_day(today);
         }
-        else if(action == 6){ //[6] terminate this month.: 
+        else if(action == 6){ //[6] terminate this month
             int ans1;
             printf("How was your month? Congratulations on making it through!\n");
             printf("Did you manage to complete all the tasks for this month (Y or N): ");
@@ -457,6 +459,15 @@ int main() {
                 printf("You still scored 3000 points. Keep up the good work and continue to strive tomorrow.\n");
             }
             today = to_new_month(today);
+        }
+        else if(action == 7){ //[7] delete an event 
+            printf("What event do you want to print?\n");
+            printf("Please input the date of the event first. (ex: 06 11 ): ");
+            scanf("%d %d", &delete_month, &delete_date);
+            printf("Please input the name of the event: ");
+            scanf(" %s", delete_name);
+            delete_content(find_current_date(delete_month, delete_date), delete_name);
+
         }
 
     }
@@ -498,6 +509,7 @@ struct event_date *event_date_insert(int start_month, int start_date, int comman
     /* insert the node */
     while(1){
         if((cur -> month == new_event_date -> month && cur -> date > new_event_date ->date) || (cur -> month > new_event_date -> month)){
+            //if 
             if(prev == NULL){
                 new_event_date -> next = cur;
                 date_head = new_event_date;
@@ -552,6 +564,9 @@ void event_content_insert(int month, int date, char *name, int start_time, int e
     else if(search_if_the_time_have_activity(cur_date->content, start_time, end_time, 1)==1) return;
     //printf("okok");
     Event_content *new_event_content = malloc(sizeof(Event_content));
+    new_event_content -> name = malloc(30);
+    new_event_content -> place = malloc(30);
+    new_event_content -> others = malloc(30);
     Event_content *content_head = cur_date->content;
     Event_content *curr = content_head;
     Event_content *prev = NULL;
@@ -570,7 +585,7 @@ void event_content_insert(int month, int date, char *name, int start_time, int e
     new_event_content -> next = NULL;
 
     hash_table_insert(new_event_content);
-    print_table();
+    //print_table();
 
     if(content_head == NULL){ //If linked List is empty
         cur_date->content = new_event_content;
@@ -742,7 +757,7 @@ int to_new_month(int date){
 void print_calendar(int year,int month,int date){
     int day[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
     int leap[12] = {31,29,31,30,31,30,31,31,30,31,30,31};
-    system("CLS");
+    //system("CLS");
     Event_date *cur = find_current_date(month,date);
     printf("%s         %4d         %2d         \n",WHITE,year,month);
     printf("%s  SUN  MON  TUE  WED  TUE  FRI  SAT \n",WHITE);
