@@ -80,9 +80,6 @@ int main(int argc, char *argv[]) {
     int initialLength = 30;
     int depth = 10;
     int lengthIncrement = 10;
-
-    //txtOutput(renderer);
-
     drawTree(renderer, startX, startY, initialLength, initialAngle, depth);
 
     SDL_Texture* yes_texture = IMG_LoadTexture(renderer, "./yes.jpg");   // 載入圖像並創建纹理
@@ -165,11 +162,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-/*while(i--){    //動畫 if needed
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderClear(renderer);
-    drawTree(renderer, startX, startY, initialLength, initialAngle, depth);
-    SDL_RenderPresent(renderer);
-    SDL_Delay(200);
-    initialLength += lengthIncrement;
-}*/
