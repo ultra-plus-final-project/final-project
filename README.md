@@ -29,3 +29,4 @@ Second, Enter the action to be performed. Action 1 is to add a new event, Action
 
 In action 4, you can choose print the whole month calendar, the whole week calendar, or the whole day schedule.</br>
 
+In action 5 and action 6, if user finish all the event, he can play the 1a2b game.</br>
