@@ -313,8 +313,8 @@ int main() {
                     scanf("%d",&today_or_not);
                     if(today_or_not==1){
                         int time;
-                        today_month=(((today>>2)<<6)/1000000);
-                        today_date=((today<<6)/1000000);
+                        today_month = today %10000 / 100;
+                        today_date = today % 100;
                         search_all_day_free_time(date_head,today_month,today_date);
                         break;
                     }else if(today_or_not==2){
