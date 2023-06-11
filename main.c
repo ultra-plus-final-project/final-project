@@ -6,6 +6,13 @@
 int today,this_year;
 enum activity_type{WORK, CELEBRATION, LEISURE};
 
+#define RED "\033[0;31m"
+#define YELLOW "\033[1;33m"
+#define GREEN "\033[0;32m"
+#define BLUE "\033[0;34m"
+#define PURPLE "\033[0;35m"
+#define WHITE "\033[1;37m"
+
 int return_today(){
     return today;
 }
@@ -491,60 +498,65 @@ void print_calendar(int year,int month,int date){
     int leap[12] = {31,29,31,30,31,30,31,31,30,31,30,31};
     system("CLS");
     Event_date *cur = find_current_date(month,date);
-    printf("         %4d         %2d         \n",year,month);
-    printf("  SUN  MON  TUE  WED  TUE  FRI  SAT \n");
-    printf("+----+----+----+----+----+----+----+\n");
+    printf("%s         %4d         %2d         \n",WHITE,year,month);
+    printf("%s  SUN  MON  TUE  WED  TUE  FRI  SAT \n",WHITE);
+    printf("%s+----+----+----+----+----+----+----+\n",BLUE);
     int d = find_weekday(year,month,1);
-    printf("|");
+    printf("%s|",BLUE);
     int cur_date = 1;
     int cur_day = d;
     if(month ==2 && isleap(year)){
         while((cur_date - cur_day) <= leap[month-1] && cur_day <= 6){
             for(int i = cur_date - cur_day ; i < cur_date - cur_day + 7  ; ++i){
                 if(i <= 0){
-                    printf("    |");
+                    printf("%s    |",BLUE);
                 }else if(i > leap[month-1]){
-                    printf("    |");
+                    printf("%s    |",BLUE);
                 }else{
-                    printf(" %2d |",i);
+                    printf("%s %2d ",YELLOW,i);
+                    printf("%s|",BLUE);
                 }
             }
-            printf("\n|");
+            printf("%s\n|",BLUE);
             for(int i = cur_date - cur_day ; i < cur_date - cur_day + 7  ; ++i){
                 if(i <= 0){
-                    printf("    |");
+                    printf("%s    |",BLUE);
                     continue;
                 }else{
                     if(cur == NULL){
-                        printf("    |");
+                        printf("%s    |",BLUE);
                         continue;
                     }
                     if(i > leap[month-1]){
-                        printf("    |");
+                        printf("%s    |",BLUE);
                         continue;
                     }
                     switch (cur -> event_num){
                     case 0:
-                        printf("    |");
+                        printf("%s    |",BLUE);
                         break;
                     case 1:
-                        printf(".   |");
+                        printf("%s.   ",YELLOW);
+                        printf("%s|",BLUE);
                         break;
                     case 2:
-                        printf("..  |");
+                        printf("%s..  ",YELLOW);
+                        printf("%s|",BLUE);
                         break;
                     case 3:
-                        printf("... |");
+                        printf("%s... ",YELLOW);
+                        printf("%s|",BLUE);
                         break;
                     default:
-                        printf("....|");
+                        printf("%s....",YELLOW);
+                        printf("%s|",BLUE);
                         break;
                     }
                 }
                 cur = cur -> next;
             }
             printf("\n");
-            printf("+----+----+----+----+----+----+----+\n");
+            printf("%s+----+----+----+----+----+----+----+\n",BLUE);
             if((cur_date - cur_day + 7) <= leap[month-1]){
                 printf("|");
             }
@@ -554,55 +566,61 @@ void print_calendar(int year,int month,int date){
         while((cur_date - cur_day) <= day[month-1] && cur_day <= 6){
             for(int i = cur_date - cur_day ; i < cur_date - cur_day + 7  ; ++i){
                 if(i <= 0){
-                    printf("    |");
+                    printf("%s    |",BLUE);
                 }else if(i > day[month-1]){
-                    printf("    |");
+                    printf("%s    |",BLUE);
                 }else{
-                    printf(" %2d |",i);
+                    printf("%s %2d ",YELLOW,i);
+                    printf("%s|",BLUE);
                 }
             }
-            printf("\n|");
+            printf("%s\n|",BLUE);
             for(int i = cur_date - cur_day ; i < cur_date - cur_day + 7  ; ++i){
                 if(i <= 0){
-                    printf("    |");
+                    printf("%s    |",BLUE);
                     continue;
                 }else{
                     if(cur == NULL){
-                        printf("    |");
+                        printf("%s    |",BLUE);
                         continue;
                     }
                     if(i > day[month-1]){
-                        printf("    |");
+                        printf("%s    |",BLUE);
                         continue;
                     }
                     switch (cur -> event_num){
                     case 0:
-                        printf("    |");
+                        printf("%s    |",BLUE);
                         break;
                     case 1:
-                        printf(".   |");
+                        printf("%s.   ",YELLOW);
+                        printf("%s|",BLUE);
                         break;
                     case 2:
-                        printf("..  |");
+                        printf("%s..  ",YELLOW);
+                        printf("%s|",BLUE);
                         break;
                     case 3:
-                        printf("... |");
+                        printf("%s... ",YELLOW);
+                        printf("%s|",BLUE);
                         break;
                     default:
-                        printf("....|");
+                        printf("%s....",YELLOW);
+                        printf("%s|",BLUE);
                         break;
                     }
                 }
                 cur = cur -> next;
             }
             printf("\n");
-            printf("+----+----+----+----+----+----+----+\n");
+            printf("%s+----+----+----+----+----+----+----+\n",BLUE);
             if((cur_date - cur_day + 7) <= day[month-1]){
                 printf("|");
             }
             cur_date = cur_date + 7;
         }
     }
+    printf("%s",WHITE);
     return;
 }
 
@@ -610,48 +628,56 @@ void print_week(int year,int month,int date){
     int day[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
     system("CLS");
     Event_date *cur = find_current_date(month,date);
-    printf("         %4d         %2d         \n",year,month);
+    printf("%s         %4d         %2d         \n",WHITE,year,month);
     printf("  SUN  MON  TUE  WED  TUE  FRI  SAT \n");
-    printf("+----+----+----+----+----+----+----+\n");
+    printf("%s+----+----+----+----+----+----+----+\n",BLUE);
     int d = find_weekday(year,month,date);
     printf("|");
     for(int i = date - d ; i < date - d + 7  ; ++i){
         if(i <= 0){
-            printf(" %2d |", i + day[month-2]);
+            printf("%s %2d ",YELLOW, i + day[month-2]);
+            printf("%s|",BLUE);
         }else if(i > day[month-1]){
-            printf(" %2d |",i - day[month-1]);
+            printf("%s %2d ",YELLOW,i - day[month-1]);
+            printf("%s|",BLUE);
         }else{
-            printf(" %2d |",i);
+            printf("%s %2d ",YELLOW,i);
+            printf("%s|",BLUE);
         }
     }
-    printf("\n|");
+    printf("%s\n|",BLUE);
     for(int i = date - d ; i < date - d + 7  ; ++i){
         if(i < date){
-            printf("    |");
+            printf("%s    |",BLUE);
             continue;
         }else{
             switch (cur -> event_num){
             case 0:
-                printf("    |");
+                printf("%s    |",BLUE);
                 break;
             case 1:
-                printf(".   |");
+                printf("%s.   ",YELLOW);
+                printf("%s|",BLUE);
                 break;
             case 2:
-                printf("..  |");
+                printf("%s..  ",YELLOW);
+                printf("%s|",BLUE);
                 break;
             case 3:
-                printf("... |");
+                printf("%s... ",YELLOW);
+                printf("%s|",BLUE);
                 break;
             default:
-                printf("....|");
+                printf("%s....",YELLOW);
+                printf("%s|",BLUE);
                 break;
             }
         }
         cur = cur -> next;
     }
     printf("\n");
-    printf("+----+----+----+----+----+----+----+\n");
+    printf("%s+----+----+----+----+----+----+----+\n",BLUE);
+    printf("%s",WHITE);
     return;
 }
 
@@ -659,12 +685,7 @@ void print_date(int year,int month,int date){
     Event_date *cur = find_current_date(month,date);
     //system("cls");  //我不知道為什麼把這行註解就可以過了
     printf("   %4d   %2d   %2d   \n",year,month,date);
-    /**************changes******************/
-    Event_date *tmp=malloc(sizeof(Event_date));
-    get_content_from_file(tmp);
-    Event_content *cur_event = find_day(tmp,month,date);
-    /**************changes******************/
-    //Event_content *cur_event = cur->content;
+    Event_content *cur_event = cur->content;
     int A[24]={0};
     while(cur_event != NULL){
         for(int i = cur_event->start_time ; i <= cur_event->end_time ; ++i){
@@ -674,17 +695,17 @@ void print_date(int year,int month,int date){
     }
     cur_event = cur->content;
     for(int i = 0;i <= 23; ++i){
-        printf("%2d------------------\n",i);
+        printf("%s%2d------------------\n",WHITE,i);
         if(A[i]==0){
             printf("                    \n");
         }else{
-            printf(".%-18s*\n",cur_event->name);
+            printf("%s.%-18s*\n",YELLOW,cur_event->name);
             if(i == cur_event->end_time){
                 cur_event = cur_event->next;
             }
         }
     }
-    printf("24------------------\n");
+    printf("%s24------------------\n",WHITE);
     return;
 }
 
