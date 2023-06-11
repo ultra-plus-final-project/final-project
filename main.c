@@ -85,6 +85,7 @@ Event_content *find_day(Event_date *ptr,int month,int date);
 /**************newly added*************/
 
 int main() {
+    char bad_bad;
     int normal_month_day[12]={31,28,31,30,31,30,31,31,30,31,30,31};
     int leap_month_day[12]={31,29,31,30,31,30,31,31,30,31,30,31};
     char user_name[50];
@@ -137,23 +138,24 @@ int main() {
             char name[30],place[30],others[30],selection;
             int start_month, end_month, start_date, end_date;
             printf("Please enter your event's name(limited in 28 words): ");
-            scanf("%29s", name);
+            scanf("%c", &bad_bad);
+            fgets(name, 29, stdin);//+++++++++++++
             printf("Please enter the place the event takes place (limited in 28 words): ");
-            scanf("%29s", place);
+            fgets(place, 29, stdin);//+++++++++++++
             printf("Please enter the things you want to memo for the event (limited in 28 words): ");
-            scanf("%29s", others);
+            fgets(others, 29, stdin);//+++++++++++++
             int start_time, end_time;
             bool is_whole_day;
-            char temp;
+            char temp[10];
             while(1){
                 printf("Is it a whole day function (Y or N): ");
                 scanf(" %c", &temp);
-                if(temp == 'Y'){
+                if(strcmp(temp, "Y") == 0){
                     start_time = 0000;
                     end_time = 2400;
                     break;
                 }
-                else if(temp == 'N'){
+                else if(strcmp(temp, "N") == 0){
                     printf("What is the start time of the event (using 24-hour clock, e.g.1500): ");
                     scanf("%d", &start_time);
                     printf("What is the end time of the event (using 24-hour clock, e.g.1500): ");
