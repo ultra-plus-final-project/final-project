@@ -20,3 +20,5 @@ initializes sdl2, defines/creates a window, renderer, yes_texture, oops_texture,
 
 5.Compile and link your code: In your development environment, create a new project or source file and add your SDL code to it. During the compilation and linking process, make sure your development tool can find the SDL headers and libraries. If everything is set up correctly, you should be able to successfully compile and run your SDL code.</br>
 
+----------------------------------------------------------------------------------------------------</br>
+How to use this porgram?</br>
