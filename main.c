@@ -245,144 +245,146 @@ int main() {
             int today_month,today_date,time;
             while(1){
                 printf("How would you like to search?\n");
-                printf("[1] search if the time has activity\n ");
+                printf("[1] search if the time has activity\n");
                 printf("[2] search all the free time you have\n");
                 printf("[3] search scheduled time through entering activity\n");
                 scanf("%d",&event_search);
+                if(event_search==1){
+                    while(1){
+                        printf("What day are you searching? (today[1], others[2]) :\n");
+                        scanf("%d",&today_or_not);
+                        if(today_or_not==1){
+                            int time;
+                            today_month=(((today>>2)<<6)/1000000);
+                            today_date=((today<<6)/1000000);
+                            while(1){
+                                printf("what time would you like too search (ex: 1800 ): ");
+                                scanf("%d",&time);
+                                if(time<=2400&&time>=0000){
+                                    break;
+                                }else{
+                                    printf("Invalid Input in time!!!\n");
+                                }
+                            }
+                            search_if_have_activity_on_the_date(date_head,today_month,today_date,time);
+                            break;
+                        }else if(today_or_not==2){
+                            while(1){
+                                printf("What month and date would you like to search? (ex: 06 11 ): ");
+                                scanf(" %d %d",&today_month,&today_date);
+                                if(today_month<1&&today_month>12){
+                                    printf("Invalid Input in month!!!\n");
+                                    continue;
+                                }
+                                if(isleap(today/10000)){
+                                    if(today_date>=1&&today_date<=leap_month_day[today_month-1]){
+                                        break;
+                                    }else{
+                                        printf("Invalid Input in date!!!\n");
+                                    }
+                                }else{
+                                    if(today_date>=1&&today_date<=normal_month_day[today_month-1]){
+                                        break;
+                                    }else{
+                                        printf("Invalid Input in date!!!\n");
+                                    }
+                                }
+                            }
+                            while(1){
+                                printf("what time would you like too search (ex: 1800 ): ");
+                                scanf("%d",&time);
+                                if(time<=2400&&time>=0000){
+                                    break;
+                                }else{
+                                    printf("Invalid Input in time!!!\n");
+                                }
+                            }
+                            search_if_have_activity_on_the_date(date_head,today_month,today_date,time);
+                            break;
+                        }
+                    }
+                    break;
+                }else if(event_search==2){
+                    while(1){
+                        printf("What day are you searching? (today[1], others[2]) :\n");
+                        scanf("%d",&today_or_not);
+                        if(today_or_not==1){
+                            int time;
+                            today_month=(((today>>2)<<6)/1000000);
+                            today_date=((today<<6)/1000000);
+                            search_all_day_free_time(date_head,today_month,today_date);
+                            break;
+                        }else if(today_or_not==2){
+                            while(1){
+                                printf("What month and date would you like to search? (ex: 06 11 ): ");
+                                scanf(" %d %d",&today_month,&today_date);
+                                if(today_month<1&&today_month>12){
+                                    printf("Invalid Input in month!!!\n");
+                                    continue;
+                                }
+                                if(isleap(today/10000)){
+                                    if(today_date>=1&&today_date<=leap_month_day[today_month-1]){
+                                        break;
+                                    }else{
+                                        printf("Invalid Input in date!!!\n");
+                                    }
+                                }else{
+                                    if(today_date>=1&&today_date<=normal_month_day[today_month-1]){
+                                        break;
+                                    }else{
+                                        printf("Invalid Input in date!!!\n");
+                                    }
+                                }
+                            }
+                            search_all_day_free_time(date_head,today_month,today_date);
+                            break;
+                        }
+                    }
+                    break;
+                }else if(event_search==3){
+                    char activity_name[30];
+                    while(1){
+                        printf("What day are you searching? (today[1], others[2]) :\n");
+                        scanf("%d",&today_or_not);
+                        if(today_or_not==1){
+                            int time;
+                            today_month=(((today>>2)<<6)/1000000);
+                            today_date=((today<<6)/1000000);
+                            printf("What is the name of the activity: ");
+                            scanf("%29s", activity_name);
+                            search_scheduled_time_through_activity(date_head,activity_name,today_month,today_date);
+                            break;
+                        }else if(today_or_not==2){
+                            while(1){
+                                printf("What month and date would you like to search? (ex: 06 11 ): ");
+                                scanf(" %d %d",&today_month,&today_date);
+                                if(today_month<1&&today_month>12){
+                                    printf("Invalid Input in month!!!\n");
+                                    continue;
+                                }
+                                if(isleap(today/10000)){
+                                    if(today_date>=1&&today_date<=leap_month_day[today_month-1]){
+                                        break;
+                                    }else{
+                                        printf("Invalid Input in date!!!\n");
+                                    }
+                                }else{
+                                    if(today_date>=1&&today_date<=normal_month_day[today_month-1]){
+                                        break;
+                                    }else{
+                                        printf("Invalid Input in date!!!\n");
+                                    }
+                                }
+                            }
+                            printf("What is the name of the activity: ");
+                            scanf("%29s", activity_name);
+                            search_scheduled_time_through_activity(date_head,activity_name,today_month,today_date);
+                            break;
+                        }
+                    }
+                    break;
+                }
             }
-            if(event_search==1){
-                while(1){
-                    printf("What day are you searching? (today[1], others[2]) :\n");
-                    scanf("%d",&today_or_not);
-                    if(today_or_not==1){
-                        int time;
-                        today_month=(((today>>2)<<6)/1000000);
-                        today_date=((today<<6)/1000000);
-                        while(1){
-                            printf("what time would you like too search (ex: 1800 ): ");
-                            scanf("%d",&time);
-                            if(time<=2400&&time>=0000){
-                                break;
-                            }else{
-                                printf("Invalid Input in time!!!\n");
-                            }
-                        }
-                        search_if_have_activity_on_the_date(date_head,today_month,today_date,time);
-                        break;
-                    }else if(today_or_not==2){
-                        while(1){
-                            printf("What month and date would you like to search? (ex: 06 11 ): ");
-                            scanf(" %d %d",&today_month,&today_date);
-                            if(today_month<1&&today_month>12){
-                                printf("Invalid Input in month!!!\n");
-                                continue;
-                            }
-                            if(isleap(today/10000)){
-                                if(today_date>=1&&today_date<=leap_month_day[today_month-1]){
-                                    break;
-                                }else{
-                                    printf("Invalid Input in date!!!\n");
-                                }
-                            }else{
-                                if(today_date>=1&&today_date<=normal_month_day[today_month-1]){
-                                    break;
-                                }else{
-                                    printf("Invalid Input in date!!!\n");
-                                }
-                            }
-                        }
-                        while(1){
-                            printf("what time would you like too search (ex: 1800 ): ");
-                            scanf("%d",&time);
-                            if(time<=2400&&time>=0000){
-                                break;
-                            }else{
-                                printf("Invalid Input in time!!!\n");
-                            }
-                        }
-                        search_if_have_activity_on_the_date(date_head,today_month,today_date,time);
-                        break;
-                    }
-                }
-            }else if(event_search==2){
-                while(1){
-                    printf("What day are you searching? (today[1], others[2]) :\n");
-                    scanf("%d",&today_or_not);
-                    if(today_or_not==1){
-                        int time;
-                        today_month=(((today>>2)<<6)/1000000);
-                        today_date=((today<<6)/1000000);
-                        search_all_day_free_time(date_head,today_month,today_date);
-                        break;
-                    }else if(today_or_not==2){
-                        while(1){
-                            printf("What month and date would you like to search? (ex: 06 11 ): ");
-                            scanf(" %d %d",&today_month,&today_date);
-                            if(today_month<1&&today_month>12){
-                                printf("Invalid Input in month!!!\n");
-                                continue;
-                            }
-                            if(isleap(today/10000)){
-                                if(today_date>=1&&today_date<=leap_month_day[today_month-1]){
-                                    break;
-                                }else{
-                                    printf("Invalid Input in date!!!\n");
-                                }
-                            }else{
-                                if(today_date>=1&&today_date<=normal_month_day[today_month-1]){
-                                    break;
-                                }else{
-                                    printf("Invalid Input in date!!!\n");
-                                }
-                            }
-                        }
-                        search_all_day_free_time(date_head,today_month,today_date);
-                        break;
-                    }
-                }
-            }else if(event_search==3){
-                char activity_name[30];
-                while(1){
-                    printf("What day are you searching? (today[1], others[2]) :\n");
-                    scanf("%d",&today_or_not);
-                    if(today_or_not==1){
-                        int time;
-                        today_month=(((today>>2)<<6)/1000000);
-                        today_date=((today<<6)/1000000);
-                        printf("What is the name of the activity: ");
-                        scanf("%29s", activity_name);
-                        search_scheduled_time_through_activity(date_head,activity_name,today_month,today_date);
-                        break;
-                    }else if(today_or_not==2){
-                        while(1){
-                            printf("What month and date would you like to search? (ex: 06 11 ): ");
-                            scanf(" %d %d",&today_month,&today_date);
-                            if(today_month<1&&today_month>12){
-                                printf("Invalid Input in month!!!\n");
-                                continue;
-                            }
-                            if(isleap(today/10000)){
-                                if(today_date>=1&&today_date<=leap_month_day[today_month-1]){
-                                    break;
-                                }else{
-                                    printf("Invalid Input in date!!!\n");
-                                }
-                            }else{
-                                if(today_date>=1&&today_date<=normal_month_day[today_month-1]){
-                                    break;
-                                }else{
-                                    printf("Invalid Input in date!!!\n");
-                                }
-                            }
-                        }
-                        printf("What is the name of the activity: ");
-                        scanf("%29s", activity_name);
-                        search_scheduled_time_through_activity(date_head,activity_name,today_month,today_date);
-                        break;
-                    }
-                }
-            }
-
         }
         else if(action == 3){ //[3] search for an event using hash function
             struct event_content *searched_event;
@@ -1413,13 +1415,18 @@ Event_content *find_day(Event_date *ptr,int month,int date){
 }
 
 Event_content *find_today(Event_date *date_head,int month,int date){
+    Event_content * tmp;
     while(date_head!=NULL){
         if(date_head->month==month&&date_head->date==date){
+            tmp=date_head->content;
             break;
         }
         date_head=date_head->next;
     }
-    return (date_head->content);
+    if(date_head==NULL){
+        tmp=NULL;
+    }
+    return tmp;
 }
 
 /**************************************priority queue************************************/
