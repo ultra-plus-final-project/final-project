@@ -558,6 +558,7 @@ void event_content_insert(int month, int date, char *name, int start_time, int e
         (2) if is, then insert the schedule
     */
     Event_date *cur_date = find_current_date(month, date);
+    cur_date -> event_num++;
     if(cur_date == NULL){
         cur_date = event_date_insert(month, date, 1);
     }
