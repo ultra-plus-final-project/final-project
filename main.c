@@ -164,24 +164,17 @@ int main() {
 
         if(action == 1){
             printf("Yeah, %s, let's start for buliding an event.\n", user_name);
-            char name[30],place[30],others[30],selection;
+            char name[30] = {0}, place[30] = {0}, others[30] = {0},selection;
             int start_month, end_month, start_date, end_date;
             printf("Please enter your event's name(limited in 28 words): ");
-            scanf("%c", &bad_bad);
-            fgets(name, 29, stdin);//+++++++++++++
+            scanf(" %29s", name);
             if(name[(signed)strlen(name) - 1] == '\n'){
                 name[(signed)strlen(name) - 1] == '\0';
             }
             printf("Please enter the place the event takes place (limited in 28 words): ");
-            fgets(place, 29, stdin);//+++++++++++++
-            if(place[(signed)strlen(place) - 1] == '\n'){
-                place[(signed)strlen(place) - 1] = '\0';
-            }
+            scanf(" %29s", place);
             printf("Please enter the things you want to memo for the event (limited in 28 words): ");
-            fgets(others, 29, stdin);//+++++++++++++
-            if(others[(signed)strlen(others) - 1] == '\n'){
-                others[(signed)strlen(others) - 1] = '\0';
-            }
+            scanf(" %29s", place);
             int start_time, end_time;
             bool is_whole_day;
             char temp[10];
@@ -386,7 +379,7 @@ int main() {
                             }
                         }
                         printf("What is the name of the activity: ");
-                        scanf("%29s", activity_name);
+                        scanf(" %29s", activity_name);
                         search_scheduled_time_through_activity(date_head,activity_name,today_month,today_date);
                         break;
                     }
@@ -395,14 +388,15 @@ int main() {
 
         }
         else if(action == 3){ //[3] search for an event using hash function
-            Event_content *searched_event = malloc(sizeof(Event_content));
+            Event_content searched_event;
+            searched_event.name = malloc(sizeof(struct event_content));
             printf("what event do you want to search?\n");
-            scanf(" %s", searched_event -> name);
-            if(searched_event -> name[(signed)strlen(searched_event -> name) - 1] == '\n'){
-                searched_event -> name[(signed)strlen(searched_event -> name) - 1] = '\0';
+            scanf(" %s", searched_event.name);
+            if(searched_event.name[(signed)strlen(searched_event.name) - 1] == '\n'){
+                searched_event.name[(signed)strlen(searched_event.name) - 1] = '\0';
             }
-            printf("%s", searched_event -> name);
-            Event_content *tmp = hash_table_lookup(searched_event -> name);
+            //printf("%s", searched_event.name);
+            Event_content *tmp = hash_table_lookup(searched_event.name);
             if(tmp == false){
                 printf("event not found!\n");
             }else if(tmp == NULL){
@@ -410,7 +404,6 @@ int main() {
             }else{
                 printf("found evnet:\nPlace: %s\nPlace: %s\nOthers: %s\nStart time: %d\nEnd time: %d\n", tmp -> name, tmp -> place, tmp -> others, tmp -> start_time, tmp -> end_time);
             }
-
         }
         else if(action == 4){ //[4] print out the schedule 
             int print_select;
@@ -559,10 +552,6 @@ void event_content_insert(int month, int date, char *name, int start_time, int e
     else if(search_if_the_time_have_activity(cur_date->content, start_time, end_time, 1)==1) return;
     //printf("okok");
     Event_content *new_event_content = malloc(sizeof(Event_content));
-    new_event_content->name = malloc(30);
-    new_event_content->place = malloc(30);
-    new_event_content->others = malloc(30);
-    
     Event_content *content_head = cur_date->content;
     Event_content *curr = content_head;
     Event_content *prev = NULL;
