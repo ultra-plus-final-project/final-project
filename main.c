@@ -1199,7 +1199,6 @@ void long_term_event(char selection, int month, int date, int start_time, int en
     int leap_month_day[12]={31,29,31,30,31,30,31,31,30,31,30,31};
     if(this_year==(today/10000)){  //if this year == year
             while(annual_activity!=NULL){  //put every event in the annual_activity list into the event list
-                event_date_insert(annual_activity->month,annual_activity->date,0);
                 event_content_insert(annual_activity->month,annual_activity->date,annual_activity->content->name,annual_activity->content->start_time,annual_activity->content->end_time,annual_activity->content->place,annual_activity->content->others);
                 annual_activity=annual_activity->next;
             }
@@ -1386,7 +1385,6 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
     }else{
         for(int j=start_date;j<=end_date;j++){
             if(check_if_already_have_event(date_head,start_month,j,start_time)){
-                event_date_insert(start_month,j/*date*/,0);
                 event_content_insert(start_month,j/*date*/,name,start_time,end_time,place,others);
             }
         }
