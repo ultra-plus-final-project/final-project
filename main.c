@@ -98,6 +98,30 @@ int main() {
     int year,month,date;
     printf("Hello %s, please enter when do you want to start your calender(e.g. 2025 05 16): ", user_name);
     scanf("%d %d %d",&year,&month,&date);
+    while(1){
+        if(month > 12 || month <= 0){
+            printf("ERROR MONTH DATA\n");
+            printf("Please enter month data.\n");
+            scanf("%d",&month);
+            continue;
+        }
+        if(month == 2 && isleap(year)==1){
+            if(date > 29 || date <= 0){
+                printf("ERROR DATE DATA\n");
+                printf("Please enter date data.\n");
+                scanf("%d",&date);
+                continue;
+            }
+        }else{
+            if(date > normal_month_day[month-1] || date <= 0){
+                printf("ERROR DATE DATA\n");
+                printf("Please enter date data.\n");
+                scanf("%d",&date);
+                continue;
+            }
+        }
+        break;
+    }
     this_year=year+1;
     print_calendar(year,month,date);
     today = 10000 * year + 100 * month + date;
@@ -426,6 +450,8 @@ void remove_enter(char *sentence){
     if(*str == '\n') *str = '\0';
 }
 
+//This function will return the value 1 if the year is a leap year
+//, and return the value 0 if the year is not a leap year.
 int isleap(int year){ //return 1 if leapyear; return 0 if normal year
     if(year % 4000 == 0)
         return 0;
@@ -438,6 +464,7 @@ int isleap(int year){ //return 1 if leapyear; return 0 if normal year
     else return 0;
 }
 
+//This function finds the weekday of the date, and returns the value.(sunday return 0)
 int find_weekday(int year,int month,int date){
     int day[12]={31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     int days_count=0;
@@ -493,6 +520,7 @@ int to_new_month(int date){
     return date + 101;
 }
 
+//show the calendar and show the number of the event of the day on the calendar.
 void print_calendar(int year,int month,int date){
     int day[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
     int leap[12] = {31,29,31,30,31,30,31,31,30,31,30,31};
@@ -624,6 +652,7 @@ void print_calendar(int year,int month,int date){
     return;
 }
 
+//show one week of the calendar, and also the number of the event of the day on the calendar.
 void print_week(int year,int month,int date){
     int day[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
     system("CLS");
@@ -681,6 +710,7 @@ void print_week(int year,int month,int date){
     return;
 }
 
+//show the date schedule and show the event name at the hour.
 void print_date(int year,int month,int date){
     Event_date *cur = find_current_date(month,date);
     //system("cls");  //我不知道為什麼把這行註解就可以過了
