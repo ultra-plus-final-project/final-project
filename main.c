@@ -1,10 +1,16 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
+#include<stdlib.h>
+#include<stdint.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
 #define A_DAY_HOUR 24
+#define NAME_SIZE 29
+#define TABLE_SIZE 1000
+#define DELETED_NODE (struct event_content*)(0xFFFFFFFFFFFFUL)
 int today,this_year;
 enum activity_type{WORK, CELEBRATION, LEISURE};
+struct event_content *hash_table[TABLE_SIZE];
+
 
 #define RED "\033[0;31m"
 #define YELLOW "\033[1;33m"
@@ -48,7 +54,9 @@ Event_content *delete_content(Event_date *cur_date, char *name);
 
 void daily_event(int start_month,int end_month,int start_date,int end_date,char* name,int start_time,int end_time,char* place,char* others);
 
-void print_event_date_list(Event_date *list);
+Event_date *find_current_date(int start_month, int start_date);
+
+void print_event_date_list();
 
 void print_event_content_list(Event_content *list);
 
@@ -88,6 +96,17 @@ void search_all_day_free_time(Event_date *ptr,int month, int date);
 
 void search_scheduled_time_through_activity(Event_date *ptr, char *activity_name,int month,int date);
 
+unsigned int hash(char *name);
+
+void init_hash_table();
+
+void print_table();
+
+bool hash_table_insert(struct event_content *p);
+
+Event_content *hash_table_lookup(char *name);
+
+Event_content *hash_table_delete(char *name);
 
 /**************newly added*************/
 Event_content *find_day(Event_date *ptr,int month,int date);
@@ -138,7 +157,7 @@ int main() {
 
     while(1){
         printf("Hello, %s ,What kind of action do you want to do\n", user_name);
-        printf(" [1] enter a new event [2] search for an event [3] print out the schedule [4] terminate this day [5] terminate this month.: ");
+        printf(" [1] enter a new event [2] search for an event [3] search for an event [4] print out the schedule [5] terminate this day [6] terminate this month.: ");
         scanf("%d", &action);
     
 
@@ -230,6 +249,7 @@ int main() {
                 printf("[2] search all the free time you have\n");
                 printf("[3] search scheduled time through entering activity\n");
                 scanf("%d",&event_search);
+            }
             if(event_search==1){
                 while(1){
                     printf("What day are you searching? (today[1], others[2]) :\n");
@@ -284,7 +304,6 @@ int main() {
                         break;
                     }
                 }
-                break;
             }else if(event_search==2){
                 while(1){
                     printf("What day are you searching? (today[1], others[2]) :\n");
@@ -321,7 +340,6 @@ int main() {
                         break;
                     }
                 }
-                break;
             }else if(event_search==3){
                 char activity_name[30];
                 while(1){
@@ -364,10 +382,22 @@ int main() {
                     }
                 }
             }
-             break;   
+
+        }
+        else if(action == 3){ //[3] search for an event using hash function
+            struct event_content *searched_event;
+            printf("what event do you want to search?\n");
+            scanf(" %s", searched_event -> name);
+            Event_content *tmp = hash_table_lookup(searched_event -> name);
+            if(tmp == false){
+                printf("event not found!\n");
+            }else if(tmp == NULL){
+                printf("event has been deleted %s\n", tmp -> name);
+            }else{
+                printf("found evnet:\nPlace: %s\nPlace: %s\nOthers: %s\nStart time: %d\nEnd time: %d\n", tmp -> name, tmp -> place, tmp -> others, tmp -> start_time, tmp -> end_time);
             }
         }
-        else if(action == 3){ //[3] print out the schedule 
+        else if(action == 4){ //[4] print out the schedule 
             int print_select;
             printf("what do you want to print?\n");
             printf("[1] whole month calendar\n");
@@ -388,7 +418,7 @@ int main() {
                 break;
             }
         }
-        else if(action == 4){ //[4] terminate this day 
+        else if(action == 5){ //[5] terminate this day 
             int ans1;
             printf("How was your day? Congratulate on making it through!\n");
             printf("Did you manage to complete all the tasks for today (Y or N): ");
@@ -404,7 +434,7 @@ int main() {
             }
             today = to_new_day(today);
         }
-        else if(action == 5){ //[5] terminate this month.: 
+        else if(action == 6){ //[6] terminate this month.: 
             int ans1;
             printf("How was your month? Congratulations on making it through!\n");
             printf("Did you manage to complete all the tasks for this month (Y or N): ");
@@ -426,14 +456,23 @@ int main() {
 }
 
 
-Event_date *event_date_insert(int start_month, int start_date, int command){
+struct event_date *event_date_insert(int start_month, int start_date, int command){
     /* allocate node */
-    Event_date *new_event_date = malloc(sizeof(Event_date));
-    
+    Event_date *new_event_date;
+    Event_content *new_event_content;
+    Event_date *prev = NULL;
+    new_event_date = malloc(sizeof(struct event_date));
+    new_event_content = malloc(sizeof(struct event_content));
     if(new_event_date == NULL){
         printf("Error: malloc failed in event_date_insert\n");
-        exit(3);//要不要用return 給使用者機會再輸一次
+        exit(1);
     }
+    if(new_event_content == NULL){
+        printf("Error: malloc failed in event_date_insert\n");
+        exit(1);
+    }
+ 
+    Event_date *cur = date_head; //used to locate the needed node in linked list
  
     /* put in the data */
     new_event_date -> month = start_month;
@@ -445,33 +484,39 @@ Event_date *event_date_insert(int start_month, int start_date, int command){
     /* If linked List is empty */
     if(date_head == NULL){
         date_head = new_event_date;
+        return date_head;
     }
  
-    Event_date *date_curr = date_head;
-    Event_date *date_prev = NULL;
-
-    while(date_curr != NULL){
-        if(date_prev == NULL){
-            new_event_date->next = date_curr;
-            date_head = new_event_date;
+    /* insert the node */
+    while(1){
+        if((cur -> month == new_event_date -> month && cur -> date > new_event_date ->date) || (cur -> month > new_event_date -> month)){
+            if(prev == NULL){
+                new_event_date -> next = cur;
+                date_head = new_event_date;
+                break;
+            }
+            prev -> next = new_event_date;
+            new_event_date -> next = cur;
+            break;
         }
-
-        if(date_curr->month < new_event_date->month){
-            new_event_date->next = date_curr;
-            date_prev->next = new_event_date;
+        if(cur -> next == NULL){
+            cur -> next = new_event_date;
+            break;
         }
-            
-        else if(date_curr->month == new_event_date->month)
-            if(date_curr->date < new_event_date->date){
-                new_event_date->next = date_curr;
-                date_prev->next = new_event_date;
-        }
-                
-        date_prev = date_curr;
-        date_curr = date_curr->next;
+        prev = cur;
+        cur = cur -> next;
     }
-    if(date_curr == NULL) date_prev->next = new_event_date;
-    if(command == 1) return new_event_date;
+    /*
+    while(cur -> next != NULL)
+        cur = cur -> next;
+    */
+ 
+    
+    /* insert the last node */
+    /*
+    cur -> next = new_event_date;
+    */
+    return date_head;
 }
 
 Event_date *find_current_date(int start_month, int start_date){
@@ -493,15 +538,16 @@ void event_content_insert(int month, int date, char *name, int start_time, int e
         (2) if is, then insert the schedule
     */
     Event_date *cur_date = find_current_date(month, date);
-    
-    if(cur_date == NULL)
+    if(cur_date == NULL){
         cur_date = event_date_insert(month, date, 1);
-    else if(search_if_the_time_have_activity(cur_date->content, start_time, end_time, 1)) return;
-    
+    }
+    else if(search_if_the_time_have_activity(cur_date->content, start_time, end_time, 1)==1) return;
+    //printf("okok");
     Event_content *new_event_content = malloc(sizeof(struct event_content));
     Event_content *content_head = cur_date->content;
     Event_content *curr = content_head;
     Event_content *prev = NULL;
+    //printf("okok");
 
     if(new_event_content == NULL){
         printf("Error: malloc failed in event_content_insert\n");
@@ -515,8 +561,11 @@ void event_content_insert(int month, int date, char *name, int start_time, int e
     new_event_content -> others = others;
     new_event_content -> next = NULL;
 
+    hash_table_insert(new_event_content);
+
     if(content_head == NULL){ //If linked List is empty
         cur_date->content = new_event_content;
+        printf("okok");
     }
 
     while(curr != NULL){
@@ -585,8 +634,9 @@ Event_content *delete_content(Event_date *cur_date, char *name){
     else return tmp;
 }
 
-void print_event_date_list(Event_date *list){
+void print_event_date_list(){
   /* print start point for testing */
+    Event_date *list = date_head;
     while(list != NULL){
         printf(":: %d %d\n",list->month, list->date);
         list = list -> next;
@@ -594,10 +644,11 @@ void print_event_date_list(Event_date *list){
 }
 
 void print_event_content_list(Event_content *list){
+    Event_content *tmp = list;
     /* print time for testing */
-    while(list != NULL){
-        printf("%s: %d %d\n", list -> name, list -> start_time, list -> end_time);
-        list = list -> next;
+    while(tmp != NULL){
+        printf("%s: %d %d\n", tmp -> name, tmp -> start_time, tmp -> end_time);
+        tmp = tmp -> next;
     }
 }
 
@@ -1499,5 +1550,88 @@ Event_content *add_to_ptrlist(Event_content *list,int str_t,int end_t,char* ac,c
     strcpy(tmp->place,pl);
     strcpy(tmp->others,ot);
     return tmp;
+}
+
+unsigned int hash(char *name){ //forming correspondence(inpur: name, output: hash value)
+    int length = strnlen(name, NAME_SIZE);
+    unsigned int hash_value = 0;
+    for(int i = 0; i < length; i++){
+        hash_value += name[i];
+        hash_value = (hash_value * name[i]) % TABLE_SIZE;
+    }
+    return hash_value;
+}
+
+void init_hash_table(){
+    for(int i = 0; i < TABLE_SIZE; i++){
+        hash_table[i] = NULL;
+    }
+}
+
+void print_table(){
+    printf("Start\n");
+    for(int i = 0; i < TABLE_SIZE; i++){
+        if(hash_table[i] == NULL){
+            printf("\t%d\t---\n", i);
+        }else if(hash_table[i] == DELETED_NODE){
+            printf("\t%d\t---<deleted>\n", i);
+        }else{
+            printf("\t%d\t%s\n", i, hash_table[i] -> name);
+        }
+    }
+    printf("End\n");
+}
+
+bool hash_table_insert(struct event_content *p){ //
+    if(p == NULL){
+        return false;
+    }
+    int index = hash(p -> name); // hash using name in p
+    for(int i = 0; i < TABLE_SIZE; i++){
+        int try = (i + index) % TABLE_SIZE; //if collision ocurr, try to use linear search to find a space to fit in
+        if(hash_table[try] == NULL || hash_table[try] == DELETED_NODE){
+            hash_table[try] = p; //if finding a space
+            return true; //did find a space
+        }
+    }
+    return false; //did not find a space
+}
+
+Event_content *hash_table_lookup(char *name){
+    int index = hash(name); // hash using name directly
+    //printf("index: %d\n", index);
+    for(int i = 0; i < TABLE_SIZE; i++){
+        int try = (i + index) % TABLE_SIZE; //if collision ocurr, try to use linear search to find if it found a space to fit in
+        if(hash_table[try] == NULL){
+            return false;
+        }
+        if(hash_table[try] == DELETED_NODE){
+            continue;
+        }
+        if(strncmp(hash_table[try] -> name, name, TABLE_SIZE) == 0){
+            return hash_table[try]; //if found it, return the node
+        }
+    }
+    return NULL;
+}
+
+Event_content *hash_table_delete(char *name){
+    int index = hash(name); // hash using name directly
+    //printf("index: %d\n", index);
+    for(int i = 0; i < TABLE_SIZE; i++){
+        int try = (i + index) % TABLE_SIZE; //if collision ocurr, try to use linear search to find if it found a space to fit in
+        if(hash_table[try] == NULL){
+            return NULL;
+        }
+        if(hash_table[try] == DELETED_NODE){
+            continue;
+        }
+        if(strncmp(hash_table[try] -> name, name, TABLE_SIZE) == 0){
+            struct event_content *tmp = hash_table[try];
+            hash_table[try] = DELETED_NODE;
+            return tmp; //if found it, return the node
+        }
+    }
+    return NULL;
 }
 /**************************************priority queue************************************/
