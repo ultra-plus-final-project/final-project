@@ -29,15 +29,6 @@ void drawTree(SDL_Renderer* renderer, int x, int y, int length, double angle, in
     drawTree(renderer, x2, y2, newLength, newAngle + 0.8, depth - 1);     // 遞迴繪製右子樹
 }
 
-/*void txtOutput(SDL_Renderer* renderer){
-    TTF_Font *font = TTF_OpenFont("C:\vScode\final_project\font\bRITANIC.TTF", 10);
-    if(font == NULL){
-        printf("font not loaded");
-    }
-    SDL_Color color = {255, 255,255,255};
-    SDL_Texture *fontTexture = SDL_CreateTextureFromSurface(renderer, TTF_RenderText_Solid(font,"Hello World", color));
-}*/
-
 /*void yesNoButton(SDL_Renderer* renderer, int imageWidth, int imageHeight, int padding){
     // 加載圖像並創建纹理
     SDL_Texture* yes_texture = IMG_LoadTexture(renderer, "./yes.jpg");
@@ -74,9 +65,6 @@ int main(int argc, char *argv[]) {
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
 
-    /*int screenWidth = 800;
-    int screenHeight = 600;*/
-
     SDL_Window* window = SDL_CreateWindow("Tree", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, 0);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -95,22 +83,18 @@ int main(int argc, char *argv[]) {
     SDL_Texture* yes_texture = IMG_LoadTexture(renderer, "./yes.jpg");   // 載入圖像並創建纹理
     SDL_Texture* oops_texture = IMG_LoadTexture(renderer, "./oops.jpg");
 
-    int imageWidth, imageHeight;      
-    SDL_QueryTexture(yes_texture, NULL, NULL, &imageWidth, &imageHeight);    // 獲取圖像的寬度和高度
-
+    int imageWidth, imageHeight;    
     int padding = 10; // 圖像之間的間距
+    SDL_QueryTexture(yes_texture, NULL, NULL, &imageWidth, &imageHeight);    // 獲取圖像的寬度和高度
 
     SDL_Rect yesRect = { 30, 50, imageWidth-300, imageHeight-300 };
     SDL_RenderCopy(renderer, yes_texture, NULL, &yesRect);
 
     SDL_Rect oopsRect = { 30 + (imageWidth-300) + padding, 50, imageWidth-300, imageHeight-300 };
     SDL_RenderCopy(renderer, oops_texture, NULL, &oopsRect);
-    //yesNoButton(renderer, imageWidth, imageHeight, padding);
 
     SDL_RenderPresent(renderer);
 
-    /*SDL_Texture *adayLater_texture = IMG_LoadTexture(renderer, "./AdayLater.jpg"); 
-    SDL_Rect adayLaterRect= { 0, 0, screenWidth, screenHeight };*/
     SDL_Event event;
     int quit = 0;
 
