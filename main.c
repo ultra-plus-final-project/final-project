@@ -8,7 +8,6 @@
 #define TABLE_SIZE 1000
 #define DELETED_NODE (struct event_content*)(0xFFFFFFFFFFFFUL)
 int today,this_year;
-enum activity_type{WORK, CELEBRATION, LEISURE};
 struct event_content *hash_table[TABLE_SIZE];
 
 
