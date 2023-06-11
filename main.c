@@ -374,13 +374,13 @@ int main() {
             scanf("%d",&print_select);
             switch (print_select){
             case 1:
-                print_calendar(year,month,date);
+                print_calendar(today / 10000, (today % 10000) / 100 ,today %100);
                 break;
             case 2:
-                print_week(year,month,date);
+                print_week(today / 10000, (today % 10000) / 100 ,today %100);
                 break;
             case 3:
-                print_date(year,month,date);
+                print_date(today / 10000, (today % 10000) / 100 ,today %100);
                 break;
             default:
                 break;
