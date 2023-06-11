@@ -5,10 +5,12 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-int initialLength = 30;
+int initialLength = 20;
 int lengthIncrement = 10;
+int screenWidth = 800;
+int screenHeight = 600;
 
-// 函数來繪製樹形圖案
+// 函數來繪製樹形圖案
 void drawTree(SDL_Renderer* renderer, int x, int y, int length, double angle, int depth) {
     if (depth == 0) {
         return;
@@ -36,7 +38,6 @@ void drawTree(SDL_Renderer* renderer, int x, int y, int length, double angle, in
     SDL_Texture *fontTexture = SDL_CreateTextureFromSurface(renderer, TTF_RenderText_Solid(font,"Hello World", color));
 }*/
 
-
 /*void yesNoButton(SDL_Renderer* renderer, int imageWidth, int imageHeight, int padding){
     // 加載圖像並創建纹理
     SDL_Texture* yes_texture = IMG_LoadTexture(renderer, "./yes.jpg");
@@ -50,6 +51,14 @@ void drawTree(SDL_Renderer* renderer, int x, int y, int length, double angle, in
 
     SDL_RenderCopy(renderer, oops_texture, NULL, &oopsRect);
 }*/
+
+void aDayLater(SDL_Renderer* renderer){
+    SDL_Texture *adayLater_texture = IMG_LoadTexture(renderer, "./AdayLater.jpg"); 
+    SDL_Rect adayLaterRect= { 0, 0, screenWidth, screenHeight };
+    SDL_RenderCopy(renderer, adayLater_texture, NULL, &adayLaterRect);
+    SDL_RenderPresent(renderer);
+    SDL_Delay(1000);
+}
 
 int main(int argc, char *argv[]) {
     /*basic part main function
@@ -65,8 +74,8 @@ int main(int argc, char *argv[]) {
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
 
-    int screenWidth = 800;
-    int screenHeight = 600;
+    /*int screenWidth = 800;
+    int screenHeight = 600;*/
 
     SDL_Window* window = SDL_CreateWindow("Tree", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, 0);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -80,6 +89,7 @@ int main(int argc, char *argv[]) {
     int initialLength = 30;
     int depth = 10;
     int lengthIncrement = 10;
+
     drawTree(renderer, startX, startY, initialLength, initialAngle, depth);
 
     SDL_Texture* yes_texture = IMG_LoadTexture(renderer, "./yes.jpg");   // 載入圖像並創建纹理
@@ -99,8 +109,8 @@ int main(int argc, char *argv[]) {
 
     SDL_RenderPresent(renderer);
 
-    SDL_Texture *adayLater_texture = IMG_LoadTexture(renderer, "./AdayLater.jpg"); 
-    SDL_Rect adayLaterRect= { 0, 0, screenWidth, screenHeight };
+    /*SDL_Texture *adayLater_texture = IMG_LoadTexture(renderer, "./AdayLater.jpg"); 
+    SDL_Rect adayLaterRect= { 0, 0, screenWidth, screenHeight };*/
     SDL_Event event;
     int quit = 0;
 
@@ -127,26 +137,22 @@ int main(int argc, char *argv[]) {
                         drawTree(renderer, startX, startY, initialLength, initialAngle, depth);
                         //SDL_RenderCopy(renderer, yes_texture, NULL, &yesRect);
                         //SDL_RenderCopy(renderer, oops_texture, NULL, &oopsRect);
-                        int i = 9;
+                        int i = 10;
                         while(i--){    //動畫 if needed
                             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
                             SDL_RenderClear(renderer);
                             drawTree(renderer, startX, startY, initialLength, initialAngle, depth);
                             SDL_RenderPresent(renderer);
-                            SDL_Delay(80);
+                            SDL_Delay(70);
                             initialLength += lengthIncrement;
                         }
                         SDL_RenderPresent(renderer);
-                        SDL_Delay(2000);
-                        SDL_RenderCopy(renderer, adayLater_texture, NULL, &adayLaterRect);
-                        SDL_RenderPresent(renderer);
-                        SDL_Delay(1000);
+                        SDL_Delay(1500);
+                        aDayLater(renderer);
                         quit = 1;
                     }
                     else if(mouseX >= oopsRect.x && mouseX <= oopsRect.x + oopsRect.w && mouseY >= oopsRect.y && mouseY <= oopsRect.y + oopsRect.h){
-                        SDL_RenderCopy(renderer, adayLater_texture, NULL, &adayLaterRect);
-                        SDL_RenderPresent(renderer);
-                        SDL_Delay(1000);
+                        aDayLater(renderer);
                         quit = 1;
                     }
                 }
