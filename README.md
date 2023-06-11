@@ -1,4 +1,4 @@
-# final-project
+<h1 style="text-align: center;">final-project</h1>
 --SDL part-- </br>
 The Simple DirectMedia Layer library source code is available from:</br>
 https://www.libsdl.org/</br>
