@@ -559,6 +559,10 @@ void event_content_insert(int month, int date, char *name, int start_time, int e
     else if(search_if_the_time_have_activity(cur_date->content, start_time, end_time, 1)==1) return;
     //printf("okok");
     Event_content *new_event_content = malloc(sizeof(Event_content));
+    new_event_content->name = malloc(30);
+    new_event_content->place = malloc(30);
+    new_event_content->others = malloc(30);
+    
     Event_content *content_head = cur_date->content;
     Event_content *curr = content_head;
     Event_content *prev = NULL;
