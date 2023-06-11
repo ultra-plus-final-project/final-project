@@ -160,11 +160,11 @@ int main() {
 
     while(1){
         printf("Hello, %s ,What kind of action do you want to do\n", user_name);
-        printf(" [1] enter a new event [2] search for an event [3] fast search for an event [4] print out the schedule [5] terminate this day [6] terminate this month [7] delete an event: ");
+        printf(" [1] enter a new event [2] search for an event [3] fast search for an event [4] delete an event [5] print out the schedule [6] terminate this day [7] terminate this month: ");
         scanf("%d", &action);
     
 
-        if(action == 1){
+        if(action == 1){//[1]enter a new event
             printf("Yeah, %s, let's start for buliding an event.\n", user_name);
             char name[30] = {0}, place[30] = {0}, others[30] = {0},selection;
             int start_month, end_month, start_date, end_date;
@@ -407,7 +407,17 @@ int main() {
                 printf("found evnet:\nPlace: %s\nPlace: %s\nOthers: %s\nStart time: %d\nEnd time: %d\n", tmp -> name, tmp -> place, tmp -> others, tmp -> start_time, tmp -> end_time);
             }
         }
-        else if(action == 4){ //[4] print out the schedule 
+        else if(action == 4){ //[4] delete an event 
+            printf("What event do you want to print?\n");
+            printf("Please input the date of the event first. (ex: 06 11 ): ");
+            scanf("%d %d", &delete_month, &delete_date);
+            printf("Please input the name of the event: ");
+            scanf(" %s", delete_name);
+            delete_content(find_current_date(delete_month, delete_date), delete_name);
+
+        }
+
+        else if(action == 5){ //[5] print out the schedule 
             int print_select;
             printf("what do you want to print?\n");
             printf("[1] whole month calendar\n");
@@ -428,7 +438,7 @@ int main() {
                 break;
             }
         }
-        else if(action == 5){ //[5] terminate this day 
+        else if(action == 6){ //[6] terminate this day 
             int ans1;
             printf("How was your day? Congratulate on making it through!\n");
             printf("Did you manage to complete all the tasks for today (Y or N): ");
@@ -444,7 +454,7 @@ int main() {
             }
             today = to_new_day(today);
         }
-        else if(action == 6){ //[6] terminate this month
+        else if(action == 7){ //[7] terminate this month
             int ans1;
             printf("How was your month? Congratulations on making it through!\n");
             printf("Did you manage to complete all the tasks for this month (Y or N): ");
@@ -459,15 +469,6 @@ int main() {
                 printf("You still scored 3000 points. Keep up the good work and continue to strive tomorrow.\n");
             }
             today = to_new_month(today);
-        }
-        else if(action == 7){ //[7] delete an event 
-            printf("What event do you want to print?\n");
-            printf("Please input the date of the event first. (ex: 06 11 ): ");
-            scanf("%d %d", &delete_month, &delete_date);
-            printf("Please input the name of the event: ");
-            scanf(" %s", delete_name);
-            delete_content(find_current_date(delete_month, delete_date), delete_name);
-
         }
 
     }
