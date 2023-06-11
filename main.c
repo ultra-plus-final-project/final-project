@@ -1216,7 +1216,6 @@ void long_term_event(char selection, int month, int date, int start_time, int en
                    }else if(month==4||month==6||month==9||month==11){ //if small month
                         for(int i=date;i<30;i+=7){
                            if(check_if_already_have_event(date_head,month,i,start_time)){
-                                event_date_insert(month,i/*date*/,0);
                                 event_content_insert(month,i/*date*/,name,start_time,end_time,place,others);
                             }
                         }
@@ -1224,16 +1223,14 @@ void long_term_event(char selection, int month, int date, int start_time, int en
                         if(isleap(today/10000)){              //leap year
                             for(int i=date;i<29;i+=7){
                                 if(check_if_already_have_event(date_head,month,i,start_time)){
-                                    event_date_insert(month,i/*date*/,0);
                                     event_content_insert(month,i/*date*/,name,start_time,end_time,place,others);
                             }
                             }
-                        }else{                                  //normal year
+                        }
+                       else{                                  //normal year
                             for(int i=date;i<30;i+=7){
-                                if(check_if_already_have_event(date_head,month,i,start_time)){
-                                    event_date_insert(month,i/*date*/,0);
+                                if(check_if_already_have_event(date_head,month,i,start_time))
                                     event_content_insert(month,i/*date*/,name,start_time,end_time,place,others);
-                            }
                             }
                         }
                    }
@@ -1242,15 +1239,13 @@ void long_term_event(char selection, int month, int date, int start_time, int en
                     for(int i=month;i<12;i++){  
                         if(isleap(i)){
                             if(date<=leap_month_day[i-1]){
-                                if(check_if_already_have_event(date_head,i,date,start_time)){
-                                    event_date_insert(i/*month*/,date,0);                               //every month same date
+                                if(check_if_already_have_event(date_head,i,date,start_time)){ //every month same date
                                      event_content_insert(i/*month*/,date,name,start_time,end_time,place,others);
                                 }
                             }
                         }else{
                             if(date<=normal_month_day[i-1]){
                                 if(check_if_already_have_event(date_head,i,date,start_time)){
-                                    event_date_insert(i/*month*/, date,0);                               //every month same date
                                     event_content_insert(i/*month*/,date,name,start_time,end_time,place,others);
                                 }
                             }
@@ -1260,13 +1255,11 @@ void long_term_event(char selection, int month, int date, int start_time, int en
            case 'y':                                          //if is an annual event                  
                     if(check_if_already_have_event(date_head,month,date,start_time)){
                         annual_activity=add_to_list(annual_activity,month,date,start_time,end_time,name,place,others); //add the event into annual_activity list
-                        event_date_insert(month, date,0);                               //every month same date
                         event_content_insert(month,date,name,start_time,end_time,place,others);
                     }
                     break;
             case 'n':                                            //if not long term activity, just insert
                     if(check_if_already_have_event(date_head,month,date,start_time)){
-                        event_date_insert(month, date,0); //******************************
                         event_content_insert(month,date,name,start_time,end_time,place,others);
                     }
                     break;
