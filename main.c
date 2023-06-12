@@ -1141,14 +1141,18 @@ void search_scheduled_time_through_activity(Event_date *ptr, char *activity_name
 }
 
 int get_content_from_file(Event_date *ptr) {                        //get content from file(**while(ptr->next!=NULL){ptr=ptr->next;})
-    FILE *input_file;                                           
+    FILE *input_file;     
+    input_file=fopen("file_io.txt", "r");                           //connect input_file to input.txt (read only)
+    if (input_file == NULL) {
+        //printf("Error opening input file!\n");
+        input_file = fopen("file_io.txt", "w+");                    //create a new empty file if can't find one to read
+        if (input_file == NULL) {
+            printf("Error creating input file!\n");
+            return 0;
+        }
+    }
     char line[350]; 
     memset(line,'\0', sizeof(line));                                  
-    input_file=fopen("file_io.txt", "r");                           //connect input_file to input.txt (read only)
-    if (input_file==NULL) {                                       //if fail connecting
-        printf("Error opening input file!\n");
-        return 0;  
-    }
     while (fgets(line, sizeof(line), input_file) != NULL) {        //put a line of input_file into line 
         sscanf(line,"%d. %d/%d %d-%d",                          //distribute the things in line to ptr
                &(ptr->event_num),&(ptr->month), &(ptr->date),
