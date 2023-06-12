@@ -156,9 +156,7 @@ void print_calendar(int year,int month,int date){
 void print_week(int year,int month,int date){
     int day[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
     int leap[12] = {31,29,31,30,31,30,31,31,30,31,30,31};
-    Event_date *tmp=malloc(sizeof(Event_date));
-    get_content_from_file(tmp);
-    Event_content *cur_event =find_day( tmp, month, date); //find the current day
+    Event_date *cur = find_current_date(month,date); //find the current day
     printf("%s         %4d         %2d         \n",WHITE,year,month);
     printf("  SUN  MON  TUE  WED  TUE  FRI  SAT \n");
     printf("%s+----+----+----+----+----+----+----+\n",BLUE);
@@ -260,7 +258,9 @@ void print_week(int year,int month,int date){
 void print_date(int year,int month,int date){
     Event_date *cur = find_current_date(month,date);
     printf("   %4d   %2d   %2d   \n",year,month,date);
-    Event_content *cur_event = cur->content;
+    Event_date *tmp=malloc(sizeof(Event_date));
+    get_content_from_file(tmp);
+    Event_content *cur_event =find_day( tmp, month, date);
     int A[24]={0};
     if(cur_event == NULL){
         for(int i = 0;i <= 23; ++i){
