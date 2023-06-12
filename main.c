@@ -742,7 +742,7 @@ int to_new_day(int curr_date){
         if(((month == 1 || month == 3) || (month == 5 || month == 7)) || ((month == 8 || month == 10) || month == 12)) return curr_date + 1;
         else return curr_date - 30 + 101;
     }
-    else if(month == 12) return curr_date - 1231 + 10001;
+    else if(month == 12) return curr_date - 1231 + 10101;
     else return curr_date - 31 + 101;
 }
 
