@@ -1026,15 +1026,18 @@ void game_1a2b(int *points_of_master){
     int play = 0;
     while(1){
         printf("\n");
-        printf("\033[1;37;43m1A2B is a puzzle game.\n");
+        printf("%s1A2B is a puzzle game.\n",YELLOW);
         printf("If the number what you guess is in the right place then you get 1A.\n");
         printf("If the number is in the number but not in the right place would get 1B.\n");
         printf("If you can guess the correct number less than or equal to 9 times, \n");
         printf("you can get random points from 2,000 to 200,000\n");
-        printf("Do you want to play 1A2B ? (No: 0/ Yes: 1) : \033[m");
+        printf("Do you want to play 1A2B ? (No: 0/ Yes: 1) : ");
         scanf("%d", &play);
         if(play == 1) break;
-        else if(play == 0) return;
+        else if(play == 0) {
+            printf("%s",WHITE);
+            return;
+        }
         else{
             printf("Invalid Input!!!\n");
         }
@@ -1060,7 +1063,7 @@ void game_1a2b(int *points_of_master){
         scanf("%s", &guess_number);
         if(strlen(guess_number) != 4){
             printf("Invalid Input!!!\n");
-            printf("\033[37;41mNotice the length must be 4 digits.\033[m\n");
+            printf("%sNotice the length must be 4 digits.\n",RED);
             continue;
         }
         bool is_all_digit = true;
@@ -1074,7 +1077,7 @@ void game_1a2b(int *points_of_master){
         }
         if(is_all_digit == false){
             printf("Invalid Input!!!\n");
-            printf("\033[37;41mYou must input a 4 digit number.\033[m\n");
+            printf("%sYou must input a 4 digit number.\n",RED);
             continue;
         }
         bool have_same_number = false;
@@ -1085,7 +1088,7 @@ void game_1a2b(int *points_of_master){
         }
         if(have_same_number == true){
             printf("Invalid Input!!!\n");
-            printf("\033[37;41mThe four digits must be different.\033[m\n");
+            printf("%sThe four digits must be different.\n",RED);
             continue;
         }
         int A_num = 0, B_num = 0;
