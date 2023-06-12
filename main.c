@@ -1276,7 +1276,6 @@ void long_term_event(char selection, int month, int date, int start_time, int en
     int leap_month_day[12]={31,29,31,30,31,30,31,31,30,31,30,31};
     if(this_year==(today/10000)){  //if this year == year
             while(annual_activity!=NULL){  //put every event in the annual_activity list into the event list
-                event_date_insert(annual_activity->month,annual_activity->date,0);
                 event_content_insert(annual_activity->month,annual_activity->date,annual_activity->content->name,annual_activity->content->start_time,annual_activity->content->end_time,annual_activity->content->place,annual_activity->content->others);
                 annual_activity=annual_activity->next;
             }
@@ -1287,14 +1286,12 @@ void long_term_event(char selection, int month, int date, int start_time, int en
                    if(month==1||month==3||month==5||month==7||month==8||month==10||month==12){ //if big month
                         for(int i=date;i<31;i+=7){
                             if(check_if_already_have_event(date_head,month,i,start_time, end_time)){
-                                event_date_insert(month,i/*date*/,0);
                                 event_content_insert(month,i/*date*/,name,start_time,end_time,place,others);
                             }
                         }
                    }else if(month==4||month==6||month==9||month==11){ //if small month
                         for(int i=date;i<30;i+=7){
                             if(check_if_already_have_event(date_head,month,i,start_time, end_time)){
-                                event_date_insert(month,i/*date*/,0);
                                 event_content_insert(month,i/*date*/,name,start_time,end_time,place,others);
                             }
                         }
@@ -1302,14 +1299,12 @@ void long_term_event(char selection, int month, int date, int start_time, int en
                         if(isleap(today/10000)){              //leap year
                             for(int i=date;i<29;i+=7){
                                 if(check_if_already_have_event(date_head,month,i,start_time, end_time)){
-                                    event_date_insert(month,i/*date*/,0);
                                     event_content_insert(month,i/*date*/,name,start_time,end_time,place,others);
                             }
                             }
                         }else{                                  //normal year
                             for(int i=date;i<30;i+=7){
                                 if(check_if_already_have_event(date_head,month,i,start_time, end_time)){
-                                    event_date_insert(month,i/*date*/,0);
                                     event_content_insert(month,i/*date*/,name,start_time,end_time,place,others);
                             }
                             }
@@ -1321,15 +1316,13 @@ void long_term_event(char selection, int month, int date, int start_time, int en
                         if(isleap(i)){
                             if(date<=leap_month_day[i-1]){
                                 if(check_if_already_have_event(date_head,i,date,start_time, end_time)){
-                                    event_date_insert(i/*month*/,date,0);                               //every month same date
-                                    event_content_insert(i/*month*/,date,name,start_time,end_time,place,others);
+                                    event_content_insert(i/*month*/,date,name,start_time,end_time,place,others); //every month same date
                                 }
                             }
                         }else{
                             if(date<=normal_month_day[i-1]){
-                                if(check_if_already_have_event(date_head,i,date,start_time, end_time)){
-                                    event_date_insert(i/*month*/, date,0);                               //every month same date
-                                    event_content_insert(i/*month*/,date,name,start_time,end_time,place,others);
+                                if(check_if_already_have_event(date_head,i,date,start_time, end_time)){                           
+                                    event_content_insert(i/*month*/,date,name,start_time,end_time,place,others);  //every month same date
                                 }
                             }
                         }  
@@ -1337,14 +1330,12 @@ void long_term_event(char selection, int month, int date, int start_time, int en
                     break;
            case 'y':                                          //if is an annual event                  
                     if(check_if_already_have_event(date_head,month,date,start_time, end_time)){
-                        annual_activity=add_to_list(annual_activity,month,date,start_time,end_time,name,place,others); //add the event into annual_activity list
-                        event_date_insert(month, date,0);                               //every month same date
-                        event_content_insert(month,date,name,start_time,end_time,place,others);
+                        annual_activity=add_to_list(annual_activity,month,date,start_time,end_time,name,place,others); //add the event into annual_activity list                      
+                        event_content_insert(month,date,name,start_time,end_time,place,others); //every month same date
                     }
                     break;
             case 'n':                                            //if not long term activity, just insert
                     if(check_if_already_have_event(date_head,month,date,start_time, end_time)){
-                        event_date_insert(month, date,0); //******************************
                         event_content_insert(month,date,name,start_time,end_time,place,others);
                     }
                     break;
@@ -1446,14 +1437,12 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
             if(isleap(today/10000)){
                 for(int j=(i==start_month? start_date: 1);j<=(i==end_month? end_date : leap_month_day[i-1]);j++){
                     if(check_if_already_have_event(date_head,i/*month*/,j/*date*/,start_time, end_time)){
-                        event_date_insert(i/*month*/,j/*date*/,0);
                         event_content_insert(i/*month*/,j/*date*/,name,start_time,end_time,place,others);
                     }
                 }
             }else{
                 for(int j=(i==start_month? start_date: 1);j<=(i==end_month? end_date : normal_month_day[i-1]);j++){
                     if(check_if_already_have_event(date_head,i/*month*/,j/*date*/,start_time, end_time)){
-                        event_date_insert(i/*month*/,j/*date*/,0);
                         event_content_insert(i/*month*/,j/*date*/,name,start_time,end_time,place,others);
                     }
                 }
@@ -1463,7 +1452,6 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
     }else{
         for(int j=start_date;j<=end_date;j++){
             if(check_if_already_have_event(date_head,start_month,j,start_time, end_time)){
-                event_date_insert(start_month,j/*date*/,0);
                 event_content_insert(start_month,j/*date*/,name,start_time,end_time,place,others);
             }
         }
