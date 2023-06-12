@@ -44,7 +44,7 @@ void game_1a2b(int *points_of_master);
 
 void long_term_event(char selection, int month, int date, int start_time, int end_time,  char *name, char *place, char* others);
 
-int check_if_already_have_event(Event_date *date_head,int month,int date,int time);
+int check_if_already_have_event(Event_date *date_head, int month, int date, int start_time,int end_time);
 
 int search_if_the_time_have_activity(struct event_content *list,int start_time, int end_time, int command);
 
