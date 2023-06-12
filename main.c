@@ -887,23 +887,38 @@ void print_calendar(int year,int month,int date){
 //show one week of the calendar, and also the number of the event of the day on the calendar.
 void print_week(int year,int month,int date){
     int day[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
-    system("CLS");
-    Event_date *cur = find_current_date(month,date);
+    int leap[12] = {31,29,31,30,31,30,31,31,30,31,30,31};
+    Event_date *cur = find_current_date(month,date); //find the current day
     printf("%s         %4d         %2d         \n",WHITE,year,month);
     printf("  SUN  MON  TUE  WED  TUE  FRI  SAT \n");
     printf("%s+----+----+----+----+----+----+----+\n",BLUE);
     int d = find_weekday(year,month,date);
     printf("|");
-    for(int i = date - d ; i < date - d + 7  ; ++i){
-        if(i <= 0){
-            printf("%s %2d ",YELLOW, i + day[month-2]);
-            printf("%s|",BLUE);
-        }else if(i > day[month-1]){
-            printf("%s %2d ",YELLOW,i - day[month-1]);
-            printf("%s|",BLUE);
-        }else{
-            printf("%s %2d ",YELLOW,i);
-            printf("%s|",BLUE);
+    if(isleap(year)){
+        for(int i = date - d ; i < date - d + 7  ; ++i){
+            if(i <= 0){
+                printf("%s %2d ",YELLOW, i + leap[month-2]);
+                printf("%s|",BLUE);
+            }else if(i > leap[month-1]){
+                printf("%s %2d ",YELLOW,i - leap[month-1]);
+                printf("%s|",BLUE);
+            }else{
+                printf("%s %2d ",YELLOW,i);
+                printf("%s|",BLUE);
+            }
+        }
+    }else{
+        for(int i = date - d ; i < date - d + 7  ; ++i){
+            if(i <= 0){
+                printf("%s %2d ",YELLOW, i + day[month-2]);
+                printf("%s|",BLUE);
+            }else if(i > day[month-1]){
+                printf("%s %2d ",YELLOW,i - day[month-1]);
+                printf("%s|",BLUE);
+            }else{
+                printf("%s %2d ",YELLOW,i);
+                printf("%s|",BLUE);
+            }
         }
     }
     printf("%s\n|",BLUE);
@@ -912,6 +927,10 @@ void print_week(int year,int month,int date){
             printf("%s    |",BLUE);
             continue;
         }else{
+            if(cur == NULL){
+                printf("%s    |",BLUE);
+                continue;
+            }
             switch (cur -> event_num){
             case 0:
                 printf("%s    |",BLUE);
