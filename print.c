@@ -1,5 +1,7 @@
 #include "basic.h"
 #include "print.h"
+#include "find.h"
+#include "hash.h"
 
 void print_event_date_list(){
   /* print start point for testing */
