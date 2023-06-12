@@ -25,10 +25,22 @@ initializes sdl2, defines/creates a window, renderer, yes_texture, oops_texture,
 ----------------------------------------------------------------------------------------------------</br>
 How to use this porgram?</br>
 
-First, Enter the data for year, month, and day. If the input is incorrect, prompt for re-entering.</br>
+This program is designed to assist the user in memorizing their schedule for the year.</br>
 
-Second, Enter the action to be performed. Action 1 is to add a new event, Action 2 is to search for a specific event, Action 3 is to delete a specified event, Action 4 is to print the calendar, Action 5 is to move to the next day, and Action 6 is to move to the next month.</br>
+In the initial section of the program, the user will be prompted to input personal information such as their name and the current time. Once the information is entered, the program will proceed to inquire about various actions to be performed. These actions include the following:</br>
 
-In action 4, you can choose print the whole month calendar, the whole week calendar, or the whole day schedule.</br>
+Action 1 - Create a new event: The user will be required to input relevant details about the new event, such as the starting month, day, and any necessary memos. This information will then be inserted into the schedule.</br>
 
-In action 5 and action 6, if user finish all the event, he can play the 1a2b game.</br>
+Action 2 - Search for an event: The user can search for free time or scheduled events according to their preferred criteria.</br>
+
+Action 3 - Search through the hash table: This action allows the user to search for events using a hash table, offering an alternative method of finding specific information.</br>
+
+Action 4 - Delete an event: By providing the month, date, and event name, the user can delete a specific event from the schedule.</br>
+
+Action 5 - Print the schedule: The program provides an option to print the entire schedule, allowing the user to review their planned events.</br>
+
+Action 6 - Terminate the month: By selecting this action, the user can move on to the first day of the next month.</br>
+
+Action 7 - Terminate the day: This action allows the user to proceed to the next day.</br>
+
+By running the program repeatedly in a loop, the schedule gradually becomes more complete and comprehensive. This program serves as a valuable tool for assisting the user in organizing their time effectively and maximizing productivity.
