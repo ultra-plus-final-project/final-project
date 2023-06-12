@@ -436,10 +436,10 @@ int main() {
             }
         }
         else if(action == 6){ //[6] terminate this day 
-            int ans1;
+            char ans1;
             printf("How was your day? Congratulate on making it through!\n");
             printf("Did you manage to complete all the tasks for today (Y or N): ");
-            scanf("%d", &ans1);
+            scanf(" %c", &ans1);
             if(ans1 == 'Y'){
                 printf("Excellent! Congratulates on scoring 500 points.\n");
                 printf("Let's play a little game to relax.\n");
@@ -452,10 +452,10 @@ int main() {
             today = to_new_day(today);
         }
         else if(action == 7){ //[7] terminate this month
-            int ans1;
+            char ans1;
             printf("How was your month? Congratulations on making it through!\n");
             printf("Did you manage to complete all the tasks for this month (Y or N): ");
-            scanf("%d", &ans1);
+            scanf(" %c", &ans1);
             if(ans1 == 'Y'){
                 printf("Excellent! Congratulations on scoring 5000 points.\n");
                 printf("Let's play a little game to relax.\n");
