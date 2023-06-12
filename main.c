@@ -107,9 +107,7 @@ Event_content *hash_table_lookup(char *name);
 
 Event_content *hash_table_delete(char *name);
 
-/**************newly added*************/
 Event_content *find_day(Event_date *ptr,int month,int date);
-/**************newly added*************/
 
 int main() {
     char bad_bad;
@@ -949,7 +947,12 @@ void print_date(int year,int month,int date){
     Event_date *cur = find_current_date(month,date);
     //system("cls");  //我不知道為什麼把這行註解就可以過了
     printf("   %4d   %2d   %2d   \n",year,month,date);
-    Event_content *cur_event = cur->content;
+    /***********************for the use of file input*******************************/
+    Event_date *tmp=malloc(sizeof(Event_date));
+    get_content_from_file(tmp);
+    Event_content *cur_event =find_day( tmp, month, date);
+    /**********************for the use of file input*********************************/
+    //Event_content *cur_event = cur->content;           //原本的
     int A[24]={0};
     while(cur_event != NULL){
         for(int i = cur_event->start_time ; i <= cur_event->end_time ; ++i){
@@ -1170,12 +1173,14 @@ int get_content_from_file(Event_date *ptr) {                        //get conten
             tmp_content->others=strdup(token);                       //others is the first string before ","
         }
         ptr->next=(Event_date*)malloc(sizeof(Event_date));  //allocate memory for the next node
-        ptr=ptr->next;                                        //move to the next node
+        ptr=ptr->next; 
+        ptr=malloc(sizeof(Event_date));                                     //move to the next node
         ptr->next=NULL;                                       //set the next pointer to NULL for the last node
     }
     fclose(input_file);                                         //close the file
     return 1;
 }
+
 int write_content_on_file(Event_date *ptr){                    //write content on file
     FILE *output_file;
     output_file=fopen("file_io.txt","w");                        //connect output_file with output.txt (write only)
@@ -1420,7 +1425,7 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
 
 Event_content *find_day(Event_date *ptr,int month,int date){
     Event_content *cur=NULL;
-    while(ptr->next!=NULL){
+    while(ptr->next!=NULL){       //因為從txt讀出來的東西不知道為啥在NULL前都會有一次是亂碼，所以長這樣
         if(ptr->month==month&&ptr->date==date){
             Event_content *tmp_content=NULL;
             tmp_content->name=ptr->content->name;
