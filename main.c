@@ -990,9 +990,8 @@ void print_week(int year,int month,int date){
 void print_date(int year,int month,int date){
     Event_date *cur = find_current_date(month,date);
     printf("   %4d   %2d   %2d   \n",year,month,date);
-    Event_content *cur_event = cur->content;
     int A[24]={0};
-    if(cur_event == NULL){
+    if(cur == NULL || cur -> event_num == 0){
         for(int i = 0;i <= 23; ++i){
             printf("%s%2d------------------\n",WHITE,i);
             printf("                    \n");
@@ -1000,6 +999,7 @@ void print_date(int year,int month,int date){
         printf("%s24------------------\n",WHITE);
         return;
     }
+    Event_content *cur_event = cur->content;
     while(cur_event != NULL){
         for(int i = cur_event->start_time ; i <= cur_event->end_time ; ++i){
             A[i]=1;
