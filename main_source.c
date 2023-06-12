@@ -79,20 +79,6 @@ int main(int argc, char *argv[]) {
     SDL_Rect oopsRect = { 30 + (imageWidth-300) + padding, 50, imageWidth-300, imageHeight-300 };
     drawTree(renderer, startX, startY, initialLength, initialAngle, depth);
 
-    /*SDL_Texture* yes_texture = IMG_LoadTexture(renderer, "./yes.jpg");   // 載入圖像並創建纹理
-    SDL_Texture* oops_texture = IMG_LoadTexture(renderer, "./oops.jpg");
-
-    int imageWidth, imageHeight;    
-    int padding = 10; // 圖像之間的間距
-    SDL_QueryTexture(yes_texture, NULL, NULL, &imageWidth, &imageHeight);    // 獲取圖像的寬度和高度
-
-    SDL_Rect yesRect = { 30, 50, imageWidth-300, imageHeight-300 };
-    SDL_RenderCopy(renderer, yes_texture, NULL, &yesRect);
-
-    SDL_Rect oopsRect = { 30 + (imageWidth-300) + padding, 50, imageWidth-300, imageHeight-300 };
-    SDL_RenderCopy(renderer, oops_texture, NULL, &oopsRect);
-
-    SDL_RenderPresent(renderer);*/
     yesNoTree(renderer, yesRect, oopsRect, yes_texture, oops_texture, startX, startY, depth);
     SDL_Event event;
     int quit = 0;
