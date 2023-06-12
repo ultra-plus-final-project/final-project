@@ -894,44 +894,51 @@ void print_week(int year,int month,int date){
     printf("%s+----+----+----+----+----+----+----+\n",BLUE);
     int d = find_weekday(year,month,date);
     printf("|");
+    int A[7]={0};
     if(isleap(year)){
-        for(int i = date - d ; i < date - d + 7  ; ++i){
-            if(i <= 0){
-                printf("%s %2d ",YELLOW, i + leap[month-2]);
-                printf("%s|",BLUE);
-            }else if(i > leap[month-1]){
-                printf("%s %2d ",YELLOW,i - leap[month-1]);
-                printf("%s|",BLUE);
-            }else{
-                printf("%s %2d ",YELLOW,i);
-                printf("%s|",BLUE);
+        date = date - d;
+        for(int i = 0;i < 7; ++i){
+            if(date <= 0){//last month
+                date = date + leap[month-2];
+                month--;
+            }else if(date > leap[month-1]){
+                date = date - leap[month-1];
+                month++;
             }
+            printf("%s %2d ",YELLOW,date);
+            printf("%s|",BLUE);
+            cur = find_current_date(month,date);
+            if(cur == NULL){
+                A[i] = 0;
+            }else{
+                A[i] = cur -> event_num;
+            }
+            date++;
         }
     }else{
-        for(int i = date - d ; i < date - d + 7  ; ++i){
-            if(i <= 0){
-                printf("%s %2d ",YELLOW, i + day[month-2]);
-                printf("%s|",BLUE);
-            }else if(i > day[month-1]){
-                printf("%s %2d ",YELLOW,i - day[month-1]);
-                printf("%s|",BLUE);
-            }else{
-                printf("%s %2d ",YELLOW,i);
-                printf("%s|",BLUE);
+        date = date - d;
+        for(int i = 0;i < 7; ++i){
+            if(date <= 0){//last month
+                date = date + day[month-2];
+                month--;
+            }else if(date > day[month-1]){
+                date = date - day[month-1];
+                month++;
             }
+            printf("%s %2d ",YELLOW,date);
+            printf("%s|",BLUE);
+            cur = find_current_date(month,date);
+            if(cur == NULL){
+                A[i] = 0;
+            }else{
+                A[i] = cur -> event_num;
+            }
+            date++;
         }
     }
     printf("%s\n|",BLUE);
-    for(int i = date - d ; i < date - d + 7  ; ++i){
-        if(i < date){
-            printf("%s    |",BLUE);
-            continue;
-        }else{
-            if(cur == NULL){
-                printf("%s    |",BLUE);
-                continue;
-            }
-            switch (cur -> event_num){
+    for(int i = 0;i < 7; ++i){
+        switch (A[i]){
             case 0:
                 printf("%s    |",BLUE);
                 break;
@@ -951,9 +958,7 @@ void print_week(int year,int month,int date){
                 printf("%s....",YELLOW);
                 printf("%s|",BLUE);
                 break;
-            }
         }
-        cur = cur -> next;
     }
     printf("\n");
     printf("%s+----+----+----+----+----+----+----+\n",BLUE);
