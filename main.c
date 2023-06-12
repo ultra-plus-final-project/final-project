@@ -42,13 +42,9 @@ typedef struct event_content{
 Event_date *date_head = NULL;
 
 Event_content *find_today(Event_date *date_head,int month,int date);
-
 Event_date *event_date_insert(int month, int date, int command);
-
 void event_content_insert(int month, int date, char *name, int start_time, int end_time, char* place, char* others);
-
 Event_date *delete_date(int month, int date);
-
 Event_content *delete_content(Event_date *cur_date, char *name);
 
 void daily_event(int start_month,int end_month,int start_date,int end_date,char* name,int start_time,int end_time,char* place,char* others);
