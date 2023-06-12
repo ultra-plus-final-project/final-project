@@ -57,10 +57,6 @@ int main(int argc, char *argv[]) {
     *
     *
     *
-    *
-    *
-    *
-    *
     */
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
@@ -119,8 +115,7 @@ int main(int argc, char *argv[]) {
                         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
                         SDL_RenderClear(renderer);
                         drawTree(renderer, startX, startY, initialLength, initialAngle, depth);
-                        //SDL_RenderCopy(renderer, yes_texture, NULL, &yesRect);
-                        //SDL_RenderCopy(renderer, oops_texture, NULL, &oopsRect);
+
                         int i = 10;
                         while(i--){    //動畫 if needed
                             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
