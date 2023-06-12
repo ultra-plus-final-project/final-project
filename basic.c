@@ -414,7 +414,7 @@ int check_if_already_have_event(Event_date *date_head, int month, int date, int 
         Event_content *tmp;
         tmp=cur_date->content;
         while(tmp!=NULL){
-            if(tmp->start_time<=start_time && tmp->end_time>=end_time){
+            if((tmp->start_time<=start_time&&tmp->end_time>=start_time) || (tmp->end_time>=end_time&&tmp->start_time<=end_time)){
                 printf("You already have the activity %s at the time\n",tmp->name);
                 return 0;
                 break;
