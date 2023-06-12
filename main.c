@@ -964,15 +964,17 @@ void print_week(int year,int month,int date){
 //show the date schedule and show the event name at the hour.
 void print_date(int year,int month,int date){
     Event_date *cur = find_current_date(month,date);
-    //system("cls");  //我不知道為什麼把這行註解就可以過了
     printf("   %4d   %2d   %2d   \n",year,month,date);
-    /***********************for the use of file input*******************************/
-    Event_date *tmp=malloc(sizeof(Event_date));
-    get_content_from_file(tmp);
-    Event_content *cur_event =find_day( tmp, month, date);
-    /**********************for the use of file input*********************************/
-    //Event_content *cur_event = cur->content;           //原本的
+    Event_content *cur_event = cur->content;
     int A[24]={0};
+    if(cur_event == NULL){
+        for(int i = 0;i <= 23; ++i){
+            printf("%s%2d------------------\n",WHITE,i);
+            printf("                    \n");
+        }
+        printf("%s24------------------\n",WHITE);
+        return;
+    }
     while(cur_event != NULL){
         for(int i = cur_event->start_time ; i <= cur_event->end_time ; ++i){
             A[i]=1;
