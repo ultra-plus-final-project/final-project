@@ -898,12 +898,22 @@ void print_week(int year,int month,int date){
     if(isleap(year)){
         date = date - d;
         for(int i = 0;i < 7; ++i){
-            if(date <= 0){//last month
-                date = date + leap[month-2];
-                month--;
+            if(date <= 0){//go to last month
+                if(month == 1){//go to december
+                    date = date + leap[11];
+                    month = 12;
+                }else{
+                    date = date + leap[month-2];
+                    month--;
+                }
             }else if(date > leap[month-1]){
-                date = date - leap[month-1];
-                month++;
+                if(month == 12){//go to december
+                    date = date - leap[11];
+                    month = 1;
+                }else{
+                    date = date - leap[month-1];
+                    month++;
+                }
             }
             printf("%s %2d ",YELLOW,date);
             printf("%s|",BLUE);
@@ -918,12 +928,22 @@ void print_week(int year,int month,int date){
     }else{
         date = date - d;
         for(int i = 0;i < 7; ++i){
-            if(date <= 0){//last month
-                date = date + day[month-2];
-                month--;
+            if(date <= 0){//go to last month
+                if(month == 1){//go to december
+                    date = date + day[11];
+                    month = 12;
+                }else{
+                    date = date + day[month-2];
+                    month--;
+                }
             }else if(date > day[month-1]){
-                date = date - day[month-1];
-                month++;
+                if(month == 12){//go to december
+                    date = date - leap[11];
+                    month = 1;
+                }else{
+                    date = date - day[month-1];
+                    month++;
+                }
             }
             printf("%s %2d ",YELLOW,date);
             printf("%s|",BLUE);
