@@ -1,4 +1,7 @@
 #include "hash.h"
+#include "basic.h"
+#include "find.h"
+#include "print.h"
 
 unsigned int hash(char *name){ //forming correspondence(inpur: name, output: hash value)
     int length = strnlen(name, NAME_SIZE);
