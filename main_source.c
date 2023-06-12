@@ -6,6 +6,7 @@
 #include <SDL2/SDL_ttf.h>
 
 int initialLength = 20;
+double initialAngle = 1.5;
 int lengthIncrement = 10;
 int screenWidth = 800;
 int screenHeight = 600;
@@ -29,19 +30,15 @@ void drawTree(SDL_Renderer* renderer, int x, int y, int length, double angle, in
     drawTree(renderer, x2, y2, newLength, newAngle + 0.8, depth - 1);     // 遞迴繪製右子樹
 }
 
-/*void yesNoButton(SDL_Renderer* renderer, int imageWidth, int imageHeight, int padding){
-    // 加載圖像並創建纹理
-    SDL_Texture* yes_texture = IMG_LoadTexture(renderer, "./yes.jpg");
-    SDL_Texture* oops_texture = IMG_LoadTexture(renderer, "./oops.jpg");
-
-    // 獲取圖像的寬度和高度
-    //int imageWidth, imageHeight;
-    //SDL_QueryTexture(yes_texture, NULL, NULL, &imageWidth, &imageHeight);
+void yesNoTree(SDL_Renderer* renderer, SDL_Rect yesRect, SDL_Rect oopsRect, SDL_Texture* yes_texture, SDL_Texture* oops_texture, int startY, int startX, int depth){
+    int padding = 10; // 圖像之間的間距
+    int imageWidth, imageHeight;    
+    SDL_QueryTexture(yes_texture, NULL, NULL, &imageWidth, &imageHeight);    // 獲取圖像的寬度和高度
 
     SDL_RenderCopy(renderer, yes_texture, NULL, &yesRect);
-
     SDL_RenderCopy(renderer, oops_texture, NULL, &oopsRect);
-}*/
+    SDL_RenderPresent(renderer);
+}
 
 void aDayLater(SDL_Renderer* renderer){
     SDL_Texture *adayLater_texture = IMG_LoadTexture(renderer, "./AdayLater.jpg"); 
@@ -69,14 +66,20 @@ int main(int argc, char *argv[]) {
 
     int startX = screenWidth / 2;
     int startY = screenHeight - 50;
-    double initialAngle = 1.5;
-    int initialLength = 30;
     int depth = 10;
-    int lengthIncrement = 10;
-
-    drawTree(renderer, startX, startY, initialLength, initialAngle, depth);
 
     SDL_Texture* yes_texture = IMG_LoadTexture(renderer, "./yes.jpg");   // 載入圖像並創建纹理
+    SDL_Texture* oops_texture = IMG_LoadTexture(renderer, "./oops.jpg");
+    
+    int imageWidth, imageHeight;
+    int padding = 10; // 圖像之間的間距    
+    SDL_QueryTexture(yes_texture, NULL, NULL, &imageWidth, &imageHeight);    // 獲取圖像的寬度和高度
+
+    SDL_Rect yesRect = {30, 50, imageWidth - 300, imageHeight - 300};
+    SDL_Rect oopsRect = { 30 + (imageWidth-300) + padding, 50, imageWidth-300, imageHeight-300 };
+    drawTree(renderer, startX, startY, initialLength, initialAngle, depth);
+
+    /*SDL_Texture* yes_texture = IMG_LoadTexture(renderer, "./yes.jpg");   // 載入圖像並創建纹理
     SDL_Texture* oops_texture = IMG_LoadTexture(renderer, "./oops.jpg");
 
     int imageWidth, imageHeight;    
@@ -89,8 +92,8 @@ int main(int argc, char *argv[]) {
     SDL_Rect oopsRect = { 30 + (imageWidth-300) + padding, 50, imageWidth-300, imageHeight-300 };
     SDL_RenderCopy(renderer, oops_texture, NULL, &oopsRect);
 
-    SDL_RenderPresent(renderer);
-
+    SDL_RenderPresent(renderer);*/
+    yesNoTree(renderer, yesRect, oopsRect, yes_texture, oops_texture, startX, startY, depth);
     SDL_Event event;
     int quit = 0;
 
@@ -122,7 +125,7 @@ int main(int argc, char *argv[]) {
                             SDL_RenderClear(renderer);
                             drawTree(renderer, startX, startY, initialLength, initialAngle, depth);
                             SDL_RenderPresent(renderer);
-                            SDL_Delay(70);
+                            SDL_Delay(80);
                             initialLength += lengthIncrement;
                         }
                         SDL_RenderPresent(renderer);
