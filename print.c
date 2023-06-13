@@ -51,7 +51,8 @@ void print_calendar(int year,int month,int date){
                     printf("%s    |",BLUE);
                     continue;
                 }else{
-                    if(cur == NULL){
+                  cur = find_current_date(month,i);  
+                  if(cur == NULL){
                         printf("%s    |",BLUE);
                         continue;
                     }
@@ -108,6 +109,7 @@ void print_calendar(int year,int month,int date){
                     printf("%s    |",BLUE);
                     continue;
                 }else{
+                    cur = find_current_date(month,i);
                     if(cur == NULL){
                         printf("%s    |",BLUE);
                         continue;
