@@ -55,3 +55,5 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
 int get_content_from_file(Event_date *ptr);
 
 int write_content_on_file(Event_date *ptr);
+
+add_to_list(Event_date *list,int st_mon,int st_da,int str_t,int end_t,char* ac,char *pl,char *ot);
