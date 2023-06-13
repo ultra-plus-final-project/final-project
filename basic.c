@@ -574,3 +574,17 @@ int write_content_on_file(Event_date *ptr){                    //write content o
     fclose(output_file);                                        //close the file
     return 1;
 }
+
+Event_date *add_to_list(Event_date *list,int st_mon,int st_da,int str_t,int end_t,char* ac,char *pl,char *ot){
+    Event_date *tmp;
+    tmp=malloc(sizeof(Event_date));
+    strcpy(tmp->content->name,ac);
+    tmp->month=st_mon;
+    tmp->date=st_da;
+    tmp->content->start_time=str_t;
+    tmp->content->end_time=end_t;
+    strcpy(tmp->content->place,pl);
+    strcpy(tmp->content->others,ot);
+    tmp->next=list;
+    return tmp;
+}
