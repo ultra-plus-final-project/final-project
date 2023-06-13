@@ -260,9 +260,9 @@ void print_week(int year,int month,int date){
 void print_date(int year,int month,int date){
     Event_date *cur = find_current_date(month,date);
     printf("   %4d   %2d   %2d   \n",year,month,date);
-    Event_date *tmp=malloc(sizeof(Event_date));
-    get_content_from_file(tmp);
-    Event_content *cur_event =find_day( tmp, month, date);
+    /*Event_date *tmp=malloc(sizeof(Event_date));
+    get_content_from_file(tmp);*/
+    Event_content *cur_event =cur->content;
     int A[24]={0};
     if(cur_event == NULL){
         for(int i = 0;i <= 23; ++i){
