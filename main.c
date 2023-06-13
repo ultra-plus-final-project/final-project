@@ -247,7 +247,7 @@ int main(int argc, char *argv[]) {
                 if(isleap(today/10000)){   
                     if((start_date>leap_month_day[start_month-1])||(end_date>leap_month_day[end_month-1])||(start_date<1)||(end_date<1)){
                         printf("Invalid Input in date.\n");
-                    }else if(start_month>end_month){
+                    }else if(start_month<1||start_month>12||end_month<1||end_month>12||start_month>end_month){
                         printf("Invalid Input in month.\n");
                     }else{
                             break;
@@ -255,7 +255,7 @@ int main(int argc, char *argv[]) {
                 }else{
                     if((start_date>normal_month_day[start_month-1])||(end_date>normal_month_day[end_month-1])||(start_date<1)||(end_date<1)){
                         printf("Invalid Input in date.\n");
-                    }else if(start_month>end_month){
+                    }else if(start_month<1||start_month>12||end_month<1||end_month>12||start_month>end_month){
                         printf("Invalid Input in month.\n");
                     }else{
                         break;
