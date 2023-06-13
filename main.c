@@ -1202,9 +1202,9 @@ void print_date(int year,int month,int date){
         printf("%s24------------------\n",WHITE);
         return;
     }
-    Event_date *tmp=malloc(sizeof(Event_date));
-    get_content_from_file(tmp);
-    Event_content *cur_event =find_day( tmp, month, date);
+   /* Event_date *tmp=malloc(sizeof(Event_date));
+    get_content_from_file(tmp);*/
+    Event_content *cur_event = cur->content;
     while(cur_event != NULL){
         for(int i = cur_event->start_time ; i <= cur_event->end_time ; ++i){
             A[i]=1;
