@@ -200,7 +200,7 @@ int main(int argc, char *argv[]) {
 
     while(1){
         printf("Hello, %s ,What kind of action do you want to do\n", user_name);
-        printf(" [1] enter a new event [2] search for an event [3] fast search for an event [4] delete an event [5] print out the schedule [6] terminate this day [7] terminate this month: ");
+        printf(" [1] enter a new event\n [2] search for an event\n [3] fast search for an event\n [4] delete an event\n [5] print out the schedule\n [6] terminate this day\n [7] terminate this month:\n ");
         scanf("%d", &action);
     
 
