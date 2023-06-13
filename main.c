@@ -995,7 +995,9 @@ void print_date(int year,int month,int date){
         printf("%s24------------------\n",WHITE);
         return;
     }
-    Event_content *cur_event = cur->content;
+    Event_date *tmp=malloc(sizeof(Event_date));
+    get_content_from_file(tmp);
+    Event_content *cur_event =find_day( tmp, month, date);
     while(cur_event != NULL){
         for(int i = cur_event->start_time ; i <= cur_event->end_time ; ++i){
             A[i]=1;
@@ -1369,10 +1371,9 @@ int check_if_already_have_event(Event_date *date_head, int month, int date, int 
         Event_content *tmp;
         tmp=cur_date->content;
         while(tmp!=NULL){
-            if(tmp->start_time<=start_time && tmp->end_time>=end_time){
+            if((tmp->start_time<=start_time&&tmp->end_time>=start_time) || (tmp->end_time>=end_time&&tmp->start_time<=end_time)){
                 printf("You already have the activity %s at the time\n",tmp->name);
                 return 0;
-                break;
             }
             tmp=tmp->next;
         }
