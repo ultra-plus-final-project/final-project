@@ -1704,7 +1704,7 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
     }else{
         for(int j=start_date;j<=end_date;j++){
             if(check_if_already_have_event(date_head,start_month,j,start_time, end_time)){
-                printf("here\n");
+                //printf("here\n");
                 event_content_insert(start_month,j/*date*/,name,start_time,end_time,place,others);
             }
         }
