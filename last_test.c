@@ -454,6 +454,7 @@ int main(int argc, char *argv[]) {
             }else{
                 printf("found event: %s\nPlace: %s\nOthers: %s\nStart time: %d\nEnd time: %d\n", tmp -> name, tmp -> place, tmp -> others, tmp -> start_time, tmp -> end_time);
             }
+            printf("\n");
         }
         else if(action == 4){ //[4] delete an event 
             printf("What event do you want to print?\n");
