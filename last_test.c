@@ -1405,7 +1405,7 @@ void search_all_day_free_time(Event_date *head,int month, int date){            
         tmp = tmp->next;                                          //go to the next closest activity
     }
     //printf("%d\n",free_time_str);
-    if((free_time_str/100)==A_DAY_HOUR&&off==1&&((today%10000)/100))==month&&((today%100)==date)){
+    if((free_time_str/100)==A_DAY_HOUR&&off==1&&((today%10000)/100)==month&&((today%100)==date)){
         printf("Uhhhh...What a busy day you have.\n");
         printf("You have no free time today.\n");
     }else if((free_time_str/100)==A_DAY_HOUR&&off==1){
