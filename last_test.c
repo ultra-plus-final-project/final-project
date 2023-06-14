@@ -164,12 +164,16 @@ int main(int argc, char *argv[]) {
     char delete_name[NAME_SIZE];
     init_hash_table();
     //initialize
+    
+    printf("\n------------------------------------------------------------------\n");
     printf("Hello master, what should I call you.: ");
     scanf("%s", user_name);
 
     int year,month,date;
+    printf("\n");
     printf("Hello %s, please enter when do you want to start your calender(e.g. 2025 05 16): ", user_name);
     scanf("%d %d %d",&year,&month,&date);
+    printf("\n");
     while(1){
         if(month > 12 || month <= 0){
             printf("ERROR MONTH DATA\n");
@@ -299,7 +303,9 @@ int main(int argc, char *argv[]) {
                 printf("[1] search if the time has activity\n");
                 printf("[2] search all the free time you have\n");
                 printf("[3] search scheduled time through entering activity\n");
+                printf("[4] back to previous page\n");
                 scanf("%d",&event_search);
+                if(event_search == 4) break;
             if(event_search==1){
                 while(1){
                     printf("What day are you searching? (today[1], others[2]) :\n");
@@ -457,7 +463,7 @@ int main(int argc, char *argv[]) {
             printf("\n");
         }
         else if(action == 4){ //[4] delete an event 
-            printf("What event do you want to print?\n");
+            printf("What event do you want to delete?\n");
             printf("Please input the date of the event first. (ex: 06 11 ): ");
             scanf("%d %d", &delete_month, &delete_date);
             printf("Please input the name of the event: ");
