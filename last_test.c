@@ -452,7 +452,7 @@ int main(int argc, char *argv[]) {
             }else if(tmp == NULL){
                 printf("event has been deleted %s\n", tmp -> name);
             }else{
-                printf("found evnet:\nPlace: %s\nPlace: %s\nOthers: %s\nStart time: %d\nEnd time: %d\n", tmp -> name, tmp -> place, tmp -> others, tmp -> start_time, tmp -> end_time);
+                printf("found event: %s\nPlace: %s\nOthers: %s\nStart time: %d\nEnd time: %d\n", tmp -> name, tmp -> place, tmp -> others, tmp -> start_time, tmp -> end_time);
             }
         }
         else if(action == 4){ //[4] delete an event 
@@ -1398,9 +1398,12 @@ void search_all_day_free_time(Event_date *head,int month, int date){            
         tmp = tmp->next;                                          //go to the next closest activity
     }
     printf("%d\n",free_time_str);
-    if((free_time_str/100)==A_DAY_HOUR&&off==1){
+    if((free_time_str/100)==A_DAY_HOUR&&off==1&&((today/10000)%100)==month&&((today%100)==date)){
         printf("Uhhhh...What a busy day you have.\n");
         printf("You have no free time today.\n");
+    }else if((free_time_str/100)==A_DAY_HOUR&&off==1){
+        printf("Wow...What a busy day you have.\n");
+        printf("You have no free time at that day.\n");
     }
     if(((free_time_str/100) < A_DAY_HOUR)){
         printf("You have free time from %d o'clock to %d o'clock.\n", free_time_str, A_DAY_HOUR);                                  //if no more activity, it is free till 24
