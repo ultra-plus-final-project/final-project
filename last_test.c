@@ -221,6 +221,7 @@ int main(int argc, char *argv[]) {
             scanf(" %29s", place);
             printf("Please enter the things you want to memo for the event (limited in 28 words): ");
             scanf(" %29s", others);
+            printf("%s\n",others);
             int start_time, end_time;
             bool is_whole_day;
             char temp[10];
@@ -879,8 +880,8 @@ Event_content *delete_content(Event_date *cur_date, char *name){
 
     while(content_curr != NULL){
         if(content_prev == NULL && strcmp(content_curr->name, name) == 0){
-            cur_date->event_num--;
             cur_date->content = content_curr->next;
+            cur_date->event_num--;
         }
         else if(strcmp(content_curr->name, name) == 0){
             cur_date->event_num--;
@@ -1238,13 +1239,9 @@ void print_date(int year,int month,int date){
         printf("%s24------------------\n",WHITE);
         return;
     }
-    Event_date* tmp = NULL;
-    if (get_content_from_file(&tmp) == 0) {
-        printf("Error reading input file!\n");
-        return 1;
-    }
-    Event_content* cur_event = find_day(tmp,month,date);
-   // Event_content *cur_event = cur->content;
+   /* Event_date *tmp=malloc(sizeof(Event_date));
+    get_content_from_file(tmp);*/
+    Event_content *cur_event = cur->content;
     while(cur_event != NULL){
         for(int i = cur_event->start_time ; i <= cur_event->end_time ; ++i){
             A[i]=1;
@@ -1528,6 +1525,7 @@ int get_content_from_file(Event_date **ptr) {
     fclose(input_file);
     return 1;
 }
+
 
 int write_content_on_file(Event_date *head){                    //write content on file
     Event_date *ptr = head;
