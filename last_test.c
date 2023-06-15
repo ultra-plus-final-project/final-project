@@ -1413,7 +1413,7 @@ void search_all_day_free_time(Event_date *head,int month, int date){            
         printf("You have no free time at that day.\n");
     }
     if(((free_time_str/100) < A_DAY_HOUR)){
-        printf("You have free time from %d o'clock to %d o'clock.\n", free_time_str, A_DAY_HOUR);                                  //if no more activity, it is free till 24
+        printf("You have free time from %d o'clock to %d o'clock.\n", (free_time_str/100), A_DAY_HOUR);                                  //if no more activity, it is free till 24
     }   
      printf("\n");
 }
