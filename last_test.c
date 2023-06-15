@@ -73,7 +73,7 @@ int check_if_already_have_event(Event_date *date_head, int month, int date, int 
 
 int isleap(int year);
 
-int get_content_from_file(Event_date *ptr);
+int get_content_from_file(Event_date **ptr);
 
 int write_content_on_file(Event_date *ptr);
 
@@ -1238,9 +1238,8 @@ void print_date(int year,int month,int date){
         printf("%s24------------------\n",WHITE);
         return;
     }
-   /* Event_date *tmp=malloc(sizeof(Event_date));
-    get_content_from_file(tmp);*/
-    Event_content *cur_event = cur->content;
+   
+   // Event_content *cur_event = cur->content;
     while(cur_event != NULL){
         for(int i = cur_event->start_time ; i <= cur_event->end_time ; ++i){
             A[i]=1;
@@ -1445,49 +1444,83 @@ void search_scheduled_time_through_activity(Event_date *head, char *activity_nam
     printf("\n");
 }
 
-int get_content_from_file(Event_date *head) {                        //get content from file(**while(ptr->next!=NULL){ptr=ptr->next;})
-    Event_date *ptr = head;
-    FILE *input_file;     
-    input_file=fopen("file_io.txt", "r");                           //connect input_file to input.txt (read only)
+int get_content_from_file(Event_date **ptr) {
+    FILE *input_file;
+    input_file = fopen("file_io.txt", "r");
     if (input_file == NULL) {
-        //printf("Error opening input file!\n");
-        input_file = fopen("file_io.txt", "w+");                    //create a new empty file if can't find one to read
-        if (input_file == NULL) {
-            printf("Error creating input file!\n");
-            return 0;
-        }
+        // Handle error
+        return 0;
     }
-    char line[350]; 
-    memset(line,'\0', sizeof(line));                                  
-    while (fgets(line, sizeof(line), input_file) != NULL) {        //put a line of input_file into line 
-        sscanf(line,"%d. %d/%d %d-%d",                          //distribute the things in line to ptr
-               &(ptr->event_num),&(ptr->month), &(ptr->date),
-              &(ptr->content->start_time),&(ptr->content->end_time));
+    
+    char line[350];
+    while (fgets(line, sizeof(line), input_file) != NULL) {
+        Event_date *new_node = malloc(sizeof(Event_date));
+        new_node->content = malloc(sizeof(Event_content));
+        new_node->content->name = malloc(30);
+        new_node->content->place = malloc(30);
+        new_node->content->others = malloc(30);
+        
+        sscanf(line, "%d. %d/%d %d-%d",
+               &(new_node->event_num),
+               &(new_node->month),
+               &(new_node->date),
+               &(new_node->content->start_time),
+               &(new_node->content->end_time));
+
         char *token;
-        Event_content *tmp_content = ptr-> content;
-        tmp_content = malloc(sizeof(Event_content));
-        token=strtok(line,",");                                 //split the strings using commas as separators
-        if (token!=NULL) {
-            tmp_content->name=malloc(sizeof(token)+1);
-            tmp_content->name=strdup(token);                        //activity is the first string before ","
+        token = strtok(line, ",");
+        if (token != NULL) {
+            // Skip numeric values in the name field
+            while ((*token >= '0' && *token <= '9')||( *token=='.')) {
+                token++;
+            }
+            // Remove leading whitespace, if any
+            while (*token == ' ') {
+                token++;
+            }
+            while ((*token >= '0' && *token <= '9')||(*token=='/')) {
+                token++;
+            }
+            while (*token == ' ') {
+                token++;
+            }
+            while ((*token >= '0' && *token <= '9')||(*token=='-')) {
+                token++;
+            }
+            while (*token == ' ') {
+                token++;
+            }
+            new_node->content->name = malloc(strlen(token) + 1);
+            strcpy(new_node->content->name, token);
         }
-        token=strtok(NULL,",");                                //split the strings using commas as separators
-        if (token!=NULL) {
-            tmp_content->place=malloc(sizeof(token)+1);
-            tmp_content->place=strdup(token);                         //place is the second string before ","
+        
+        token = strtok(NULL, ",");
+        if (token != NULL) {
+            new_node->content->place = malloc(strlen(token) + 1);
+            strcpy(new_node->content->place, token);
         }
 
-        token=strtok(NULL,",");                              //split the strings using commas as separators
-        if (token!=NULL) {
-            tmp_content->others=malloc(sizeof(token)+1);
-            tmp_content->others=strdup(token);                       //others is the first string before ","
+        token = strtok(NULL, ",");
+        if (token != NULL) {
+            new_node->content->others = malloc(strlen(token) + 1);
+            strcpy(new_node->content->others, token);
         }
-        ptr->next=(Event_date*)malloc(sizeof(Event_date));  //allocate memory for the next node
-        ptr=ptr->next; 
-        ptr=malloc(sizeof(Event_date));                                     //move to the next node
-        ptr->next=NULL;                                       //set the next pointer to NULL for the last node
+        
+        new_node->next = NULL;
+
+        // Link the new node to the existing list
+        if (*ptr == NULL) {
+            *ptr = new_node;
+        } else {
+            Event_date *current = *ptr;
+            while (current->next != NULL) {
+                current = current->next;
+            }
+            current->next = new_node;
+        }
     }
-    fclose(input_file);                                         //close the file
+
+    fclose(input_file);
     return 1;
 }
 
@@ -1725,12 +1758,11 @@ void daily_event(int start_month,int end_month,int start_date,int end_date,char*
     write_content_on_file(date_head);
 }
 
-Event_content *find_day(Event_date *head,int month,int date){
-    Event_date *ptr = head;
+Event_content *find_day(Event_date *ptr,int month,int date){
     Event_content *cur=NULL;
-    while(ptr->next!=NULL){       //因為從txt讀出來的東西不知道為啥在NULL前都會有一次是亂碼，所以長這樣
+    while(ptr!=NULL){       
         if(ptr->month==month&&ptr->date==date){
-            Event_content *tmp_content=NULL;
+            Event_content *tmp_content=malloc(sizeof(Event_content));
             tmp_content->name=ptr->content->name;
             tmp_content->start_time=ptr->content->start_time;
             tmp_content->end_time=ptr->content->end_time;
@@ -1738,7 +1770,6 @@ Event_content *find_day(Event_date *head,int month,int date){
             tmp_content->others=ptr->content->others;
             tmp_content->next=cur;
             cur=tmp_content;
-            free(tmp_content);
         }
         ptr=ptr->next;
     }
