@@ -879,9 +879,11 @@ Event_content *delete_content(Event_date *cur_date, char *name){
 
     while(content_curr != NULL){
         if(content_prev == NULL && strcmp(content_curr->name, name) == 0){
+            cur_date->event_num--;
             cur_date->content = content_curr->next;
         }
         else if(strcmp(content_curr->name, name) == 0){
+            cur_date->event_num--;
             content_prev->next = content_curr->next;
         }
                 
