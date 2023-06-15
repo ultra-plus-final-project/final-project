@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
             printf("Please enter the place the event takes place (limited in 28 words): ");
             scanf(" %29s", place);
             printf("Please enter the things you want to memo for the event (limited in 28 words): ");
-            scanf(" %29s", place);
+            scanf(" %29s", others);
             int start_time, end_time;
             bool is_whole_day;
             char temp[10];
