@@ -1238,7 +1238,12 @@ void print_date(int year,int month,int date){
         printf("%s24------------------\n",WHITE);
         return;
     }
-   
+    Event_date* tmp = NULL;
+    if (get_content_from_file(&tmp) == 0) {
+        printf("Error reading input file!\n");
+        return 1;
+    }
+    Event_content* cur_event = find_day(tmp,month,date);
    // Event_content *cur_event = cur->content;
     while(cur_event != NULL){
         for(int i = cur_event->start_time ; i <= cur_event->end_time ; ++i){
